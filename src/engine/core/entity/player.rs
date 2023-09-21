@@ -39,7 +39,7 @@ impl Player{
     pub fn update_player(&mut self) {
         self.position[0] += self.velocity[0];
         self.position[1] += self.velocity[1];
-        self.sprite_size = [0.5, 0.5];
+        self.sprite_size = [0.6, 0.4];
         self.draw_sprite();
     }
 
@@ -77,7 +77,7 @@ impl Player{
             out vec4 color;
     
             void main() {
-                color = vec4(1.0, 0.0, 0.0, 1.0);
+                color = vec4(1.0, 0.0, 1.0, 1.0);
             }
         "#;
     

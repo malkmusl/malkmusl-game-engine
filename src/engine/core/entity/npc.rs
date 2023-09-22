@@ -2,9 +2,8 @@ use glium::{Surface, implement_vertex, uniform};
 
 
 
-
 #[derive(Clone)]
-pub struct Player {
+pub struct NPC {
     display: glium::Display,
     position: [f32; 2],
     velocity: [f32; 2],
@@ -12,16 +11,16 @@ pub struct Player {
 }
 
 #[derive(Copy, Clone)]
-struct PlayerSprite {
+struct NPCSprite {
     position: [f32; 2],
 }
 
 // you must pass the list of members to the macro
-implement_vertex!(PlayerSprite, position);
+implement_vertex!(NPCSprite, position);
 
-impl Player{
-    pub fn new(display: glium::Display) -> Player {
-        Player {
+impl NPC{
+    pub fn new(display: glium::Display) -> NPC {
+        NPC {
             display: display,
             position: [0.0, 0.0],
             velocity: [0.0, 0.0],
@@ -49,10 +48,10 @@ impl Player{
     pub fn draw_sprite(&mut self, frame: &mut glium::Frame) {
         let half_size = self.sprite_size[0] / 2.0;
         let vertex_buffer = glium::VertexBuffer::new(&self.display, &[
-            PlayerSprite { position: [-half_size + self.position[0], -half_size + self.position[1]] },
-            PlayerSprite { position: [half_size + self.position[0], -half_size + self.position[1]] },
-            PlayerSprite { position: [half_size + self.position[0], half_size + self.position[1]] },
-            PlayerSprite { position: [-half_size + self.position[0], half_size + self.position[1]] },
+            NPCSprite { position: [-half_size + self.position[0], -half_size + self.position[1]] },
+            NPCSprite { position: [half_size + self.position[0], -half_size + self.position[1]] },
+            NPCSprite { position: [half_size + self.position[0], half_size + self.position[1]] },
+            NPCSprite { position: [-half_size + self.position[0], half_size + self.position[1]] },
         ]).unwrap();
     
         let index_buffer = glium::IndexBuffer::new(
@@ -79,7 +78,7 @@ impl Player{
             out vec4 color;
     
             void main() {
-                color = vec4(1.0, 0.0, 0.0, 1.0);
+                color = vec4(0.0, 0.0, 1.0, 1.0);
             }
         "#;
     
@@ -97,16 +96,16 @@ impl Player{
             &Default::default(),
         ).unwrap();
     }
-
+    
     pub fn handle_input(&mut self, event: &mut glium::glutin::event::WindowEvent) {
         match event {
             glium::glutin::event::WindowEvent::KeyboardInput { input, .. } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
-                        glium::glutin::event::VirtualKeyCode::W => {println!("Pressed U"); self.velocity[1] = 0.1},
-                        glium::glutin::event::VirtualKeyCode::A => {println!("Pressed H"); self.velocity[0] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::S => {println!("Pressed J"); self.velocity[1] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::D => {println!("Pressed K"); self.velocity[0] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::U => {println!("Pressed U"); self.velocity[1] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::H => {println!("Pressed H"); self.velocity[0] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::J => {println!("Pressed J"); self.velocity[1] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::K => {println!("Pressed K"); self.velocity[0] = 0.1},
                         _ => (),
                     }
                 }
@@ -114,6 +113,4 @@ impl Player{
             _ => (),
         }
     }
-    
 }
-

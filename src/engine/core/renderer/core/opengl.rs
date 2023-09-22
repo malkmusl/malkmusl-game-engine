@@ -1,11 +1,10 @@
 extern crate glium;
 
-use glium::Surface;
-use glium::implement_vertex;
-
-use crate::engine::core::consoleLogger::Logger;
+use glium::Frame;
+use crate::engine::core::entity::npc;
 use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC};
 use crate::engine::core::entity::player;
+use crate::engine::core::renderer::D2::background_tiles;
 
 
 #[allow(unused_mut)]
@@ -13,7 +12,6 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
     let graphics_api = "OpenGL";
 
     let app_name = game_name.to_owned() + " - [" + ENGINE_NAME + " v"+ENGINE_VERSION+ " - "+ graphics_api+"]"; 
-
 
     // 1. The **winit::EventsLoop** for handling events.
     let mut events_loop = glium::glutin::event_loop::EventLoop::new();
@@ -25,34 +23,27 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
     let cb = glium::glutin::ContextBuilder::new().with_vsync(VSYNC);
     // 4. Build the Display with the given window and OpenGL context parameters and register the
     //    window with the events_loop.
-    let display = glium::Display::new(wb, cb, &events_loop).expect(&Logger::error("Failed to create display."));
-    let mut frame = display.draw();
-    let mut player = player::Player::new(display.clone());
-    player.sprite_size = [0.5, 0.5];
-    frame.clear_color(0.0, 0.0, 0.0, 1.0);
-    frame.finish().expect(&Logger::error("Failed to finish frame."));
+    let display = glium::Display::new(wb, cb, &events_loop).unwrap();
 
+
+    let mut player = player::Player::new(display.clone());
+    let mut npc = npc::NPC::new(display.clone());
+    
     // 5. start EventsLoop
     events_loop.run(move |event, _, control_flow| {
         // 6. Handle events here
         match event {
-            glium::glutin::event::Event::WindowEvent { event, .. } => {
+            glium::glutin::event::Event::WindowEvent { mut event, .. } => {
                 match event {
                     glium::glutin::event::WindowEvent::CloseRequested => {
                         *control_flow = glium::glutin::event_loop::ControlFlow::Exit;
                     }
                     _ => {
-                        player.draw_sprite();
-                        player::handle_input(event, &mut player);
+                        player.handle_input(&mut event);
+                        npc.handle_input(&mut event);
                     }
                 }
             },
-
-            glium::glutin::event::Event::MainEventsCleared => {
-                player.update_player();
-                player.set_velocity(0.0, 0.0);
-            },
-    
             glium::glutin::event::Event::DeviceEvent { event, .. } => {
                 match event {
                     glium::glutin::event::DeviceEvent::Key(input) => {
@@ -66,66 +57,32 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
                     _ => (),
                 }
             },
-            
-            _ => (),
-        }
-        
+            _ => {
+                update_content(display.clone(), &mut player, &mut npc);
+            },
+        }        
     });
 }
-
-#[derive(Copy, Clone)]
-struct MyVertex {
-    position: [f32; 2],
+fn update_content(display: glium::Display,player: &mut player::Player, npc: &mut npc::NPC){
+    let mut frame = display.draw();
+    //draw_squareV2(display.clone(), &mut frame);
+    update_background_tiles(display.clone(), &mut frame);
+    //update_player(player, &mut frame);
+    //update_npc(npc, &mut frame);
+    frame.finish().unwrap();
 }
 
-// you must pass the list of members to the macro
-implement_vertex!(MyVertex, position);
 
-fn draw_square(display: glium::Display) {
-    let vertex_buffer = glium::VertexBuffer::new(&display, &[
-        MyVertex { position: [-0.5, -0.5] },
-        MyVertex { position: [0.5, -0.5] },
-        MyVertex { position: [0.5, 0.5] },
-        MyVertex { position: [-0.5, 0.5] },
-    ]).unwrap();
 
-    let index_buffer = glium::IndexBuffer::new(
-        &display,
-        glium::index::PrimitiveType::TriangleStrip,
-        &[1 as u16, 2, 0, 3],
-    ).unwrap();
+fn update_player(player: &mut player::Player, frame: &mut Frame) {
+    player.update(frame);
+}
 
-    let vertex_shader_src = r#"
-        #version 140
+fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
+    npc.update(&mut frame);
+}
 
-        in vec2 position;
+fn update_background_tiles(display: glium::Display, frame: &mut Frame){
+    //background_tiles::draw(display.clone(), frame, 10, 10, 0.5);
 
-        void main() {
-            gl_Position = vec4(position, 0.0, 1.0);
-        }
-    "#;
-
-    let fragment_shader_src = r#"
-        #version 140
-
-        out vec4 color;
-
-        void main() {
-            color = vec4(1.0, 0.0, 0.0, 1.0);
-        }
-    "#;
-
-    let program = glium::Program::from_source(&display, vertex_shader_src, fragment_shader_src, None).unwrap();
-
-    let mut target = display.draw();
-    target.clear_color(0.0, 0.0, 0.0, 0.0);
-    target.draw(
-        &vertex_buffer,
-        &index_buffer,
-        &program,
-        &glium::uniforms::EmptyUniforms,
-        &Default::default(),
-    ).unwrap();
-    target.finish().unwrap();
-} 
-
+}

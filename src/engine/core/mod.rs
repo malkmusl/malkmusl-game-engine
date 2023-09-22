@@ -4,4 +4,4 @@ pub mod app;
 pub mod renderer;
 pub mod entity;
 
-pub mod consoleLogger;
+pub mod console_Logger;

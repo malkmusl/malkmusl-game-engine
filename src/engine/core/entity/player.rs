@@ -46,7 +46,8 @@ impl Player{
         self.position[0] += self.velocity[0];
         self.position[1] += self.velocity[1];
         self.sprite_size = [0.5, 0.5];
-        self.draw_sprite();
+        self.set_velocity(0.0, 0.0);
+        self.draw_sprite(frame);
     }
 
     pub fn draw_sprite(&mut self, frame: &mut glium::Frame) {
@@ -82,7 +83,7 @@ impl Player{
             out vec4 color;
     
             void main() {
-                color = vec4(1.0, 0.0, 1.0, 1.0);
+                color = vec4(1.0, 0.0, 0.0, 1.0);
             }
         "#;
     

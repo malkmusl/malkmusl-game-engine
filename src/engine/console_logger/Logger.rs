@@ -2,6 +2,7 @@
 use chrono::Local;
 
 use crate::engine::core::metadata;
+use crate::engine::core::renderer::core::GameStatus;
 
 
 pub fn set_color(color: metadata::Color, value: &str) -> String {
@@ -50,4 +51,24 @@ pub fn error(args: &str) -> String{
     let log_message = format!("{}{}{}", time, prefix, msg);
     println!("{}", log_message.as_str());
     log_message
+}
+
+pub fn game_state(state: GameStatus, exit_code: i8) -> String{
+    match state {
+        GameStatus::Running => {
+            let message = set_color(metadata::COLOR_BLUE, "[GameState]") + " " + &reset_color() + "Game is running";
+            let log_message = warn(message.as_str());
+            log_message
+        },
+        GameStatus::Paused => {
+            let message = set_color(metadata::COLOR_BLUE, "[GameState]") + " " + &reset_color() + "Game is paused";
+            let log_message = warn(message.as_str());
+            log_message
+        },
+        GameStatus::Stopped => {
+            let message = set_color(metadata::COLOR_BLUE, "[GameState]") + " " + &reset_color() + "Game is stopped... Exiting with code " + &exit_code.to_string() + "";
+            let log_message = error(message.as_str());
+            log_message
+        },
+    }
 }

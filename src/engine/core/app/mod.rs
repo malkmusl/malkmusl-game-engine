@@ -34,11 +34,12 @@ pub(crate) struct App {
     game_height: f64,
     state: AppState,
     systems: Vec<(AppState, fn())>,
+    debug: bool,
 }
 #[allow(dead_code, unused_assignments, unused_variables)]
 impl App {
 
-    pub fn new(game_name: &str, game_version: &str, game_width: f64, game_height: f64) -> Self {
+    pub fn new(game_name: &str, game_version: &str, game_width: f64, game_height: f64, debug: bool) -> Self {
         let args: Vec<String> = env::args().collect();
         let app = App {
             state: AppState::PreInit,
@@ -47,6 +48,7 @@ impl App {
             game_version: game_version.to_owned(),
             game_width: game_width,
             game_height: game_height,
+            debug: debug,
         };
         app
     }
@@ -101,7 +103,8 @@ impl App {
             game_width: self.game_width, 
             game_height: self.game_height, 
             state: AppState::Running, 
-            systems: self.systems 
+            systems: self.systems, 
+            debug: self.debug,
         }
     }
 

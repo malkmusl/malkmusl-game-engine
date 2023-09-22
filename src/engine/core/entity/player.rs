@@ -2,13 +2,14 @@ use glium::{Surface, implement_vertex, uniform};
 
 use crate::engine::console_logger::Logger;
 
-
-
+pub const PLAYER_DEBUG: bool = false;
+pub const PLAYER_MOVEMENT_DEBUG: bool = false;
 
 #[derive(Clone)]
 pub struct Player {
     display: glium::Display,
-    position: [f32; 2],
+    pub name: String,
+    pub position: [f32; 2],
     velocity: [f32; 2],
     pub sprite_size: [f32; 2],
 }
@@ -22,9 +23,10 @@ struct PlayerSprite {
 implement_vertex!(PlayerSprite, position);
 
 impl Player{
-    pub fn new(display: glium::Display) -> Player {
+    pub fn new(display: glium::Display, name: String) -> Player {
         Player {
             display: display,
+            name: name,
             position: [0.0, 0.0],
             velocity: [0.0, 0.0],
             sprite_size: [0.0, 0.0],
@@ -105,10 +107,10 @@ impl Player{
             glium::glutin::event::WindowEvent::KeyboardInput { input, .. } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
-                        glium::glutin::event::VirtualKeyCode::W => {Logger::info("Pressed W"); self.velocity[1] = 0.1},
-                        glium::glutin::event::VirtualKeyCode::A => {Logger::info("Pressed A"); self.velocity[0] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::S => {Logger::info("Pressed S"); self.velocity[1] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::D => {Logger::info("Pressed D"); self.velocity[0] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::W => {Logger::debug_player_movement(self, "W"); self.velocity[1] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::A => {Logger::debug_player_movement(self, "A"); self.velocity[0] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::S => {Logger::debug_player_movement(self, "S"); self.velocity[1] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::D => {Logger::debug_player_movement(self, "D"); self.velocity[0] = 0.1},
                         _ => (),
                     }
                 }

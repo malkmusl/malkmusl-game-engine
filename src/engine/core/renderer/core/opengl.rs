@@ -3,9 +3,9 @@ extern crate glium;
 use glium::Frame;
 use crate::engine::console_logger::Logger;
 use crate::engine::core::entity::npc;
-use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC, self};
+use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC};
 use crate::engine::core::entity::player;
-use crate::engine::core::renderer::D2::{background_tiles, testing};
+use crate::engine::core::renderer::D2::testing;
 
 use super::GameStatus;
 
@@ -30,7 +30,7 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
     let display = glium::Display::new(wb, cb, &events_loop).unwrap();
 
 
-    let mut player = player::Player::new(display.clone());
+    let mut player = player::Player::new(display.clone(), "makmusl".to_string());
     let mut npc = npc::NPC::new(display.clone());
     
     // 5. start EventsLoop
@@ -60,11 +60,10 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
                                 if input.state == glium::glutin::event::ElementState::Pressed {
                                     if state == GameStatus::Running{
                                         state = GameStatus::Paused;
-                                        
-                                        Logger::game_state(state, -1);
+                                        Logger::game_state(state, 21);
                                     }else{
                                         state = GameStatus::Running;
-                                        Logger::game_state(state, -1);
+                                        Logger::game_state(state, 22);
                                     }
                                 }
                             }
@@ -90,7 +89,7 @@ fn update_content(display: glium::Display,player: &mut player::Player, npc: &mut
     //draw_squareV2(display.clone(), &mut frame);
     update_background_tiles(display.clone(), &mut frame);
     update_player(player, &mut frame);
-    //update_npc(npc, &mut frame);
+    update_npc(npc, &mut frame);
     frame.finish().unwrap();
 }
 

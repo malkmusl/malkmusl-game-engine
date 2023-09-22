@@ -9,7 +9,7 @@ struct MyVertex {
 implement_vertex!(MyVertex, position);
 
 
-fn draw_square_v2(display: glium::Display, frame: &mut Frame) {
+pub fn draw_square_v2(display: glium::Display, frame: &mut Frame) {
     let vertex_buffer = glium::VertexBuffer::new(&display, &[
         MyVertex { position: [-0.5, -0.5] },
         MyVertex { position: [0.5, -0.5] },

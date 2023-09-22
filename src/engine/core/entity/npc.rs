@@ -1,5 +1,7 @@
 use glium::{Surface, implement_vertex, uniform};
 
+use crate::engine::console_logger::Logger;
+
 
 
 #[derive(Clone)]
@@ -102,10 +104,10 @@ impl NPC{
             glium::glutin::event::WindowEvent::KeyboardInput { input, .. } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
-                        glium::glutin::event::VirtualKeyCode::U => {println!("Pressed U"); self.velocity[1] = 0.1},
-                        glium::glutin::event::VirtualKeyCode::H => {println!("Pressed H"); self.velocity[0] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::J => {println!("Pressed J"); self.velocity[1] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::K => {println!("Pressed K"); self.velocity[0] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::U => {Logger::info("Pressed U"); self.velocity[1] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::H => {Logger::info("Pressed H"); self.velocity[0] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::J => {Logger::info("Pressed J"); self.velocity[1] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::K => {Logger::info("Pressed K"); self.velocity[0] = 0.1},
                         _ => (),
                     }
                 }

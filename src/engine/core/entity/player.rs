@@ -1,5 +1,7 @@
 use glium::{Surface, implement_vertex, uniform};
 
+use crate::engine::console_logger::Logger;
+
 
 
 
@@ -103,10 +105,10 @@ impl Player{
             glium::glutin::event::WindowEvent::KeyboardInput { input, .. } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
-                        glium::glutin::event::VirtualKeyCode::W => {println!("Pressed U"); self.velocity[1] = 0.1},
-                        glium::glutin::event::VirtualKeyCode::A => {println!("Pressed H"); self.velocity[0] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::S => {println!("Pressed J"); self.velocity[1] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::D => {println!("Pressed K"); self.velocity[0] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::W => {Logger::info("Pressed W"); self.velocity[1] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::A => {Logger::info("Pressed A"); self.velocity[0] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::S => {Logger::info("Pressed S"); self.velocity[1] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::D => {Logger::info("Pressed D"); self.velocity[0] = 0.1},
                         _ => (),
                     }
                 }

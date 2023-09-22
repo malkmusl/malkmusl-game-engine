@@ -20,7 +20,7 @@ pub fn get_time() -> String {
 }
 
 pub fn info(args: &str) -> String{
-    let color =  metadata::COLOR_RED;
+    let color =  metadata::COLOR_GREEN;
     let prefix = set_color(color, "[INFO] ");
     let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
     let msg = reset_color() + &format!("{}", args);
@@ -31,7 +31,7 @@ pub fn info(args: &str) -> String{
 }
 
 pub fn warn(args: &str) -> String{
-    let color =  metadata::COLOR_RED;
+    let color =  metadata::COLOR_YELLOW;
     let prefix = set_color(color, "[WARN] ");
     let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
     let msg = reset_color() + &format!("{}", args);

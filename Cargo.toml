@@ -1,8 +1,8 @@
 [package]
 name = "malkmusl-game-engine"
-version = "0.1.0"
+version = "0.0.3"
 edition = "2021"
-license = "Malkmusl's Open Source License Agreement"
+license = "MIT"
 license-file = "LICENSE.md"
 description= "A simple Rust Game Engine Supporting OpenGL and Vulkan"
 
@@ -19,3 +19,5 @@ image = "0.24.7"
 chrono = "0.4"
 tokio = { version = "1", features = ["full"] }
 na = "0.32.2"
+toml = "0.8.1"
+lazy_static = "1.4"

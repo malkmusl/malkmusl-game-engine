@@ -15,8 +15,9 @@ use super::GameStatus;
 pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) {
     let graphics_api = "OpenGL";
     let mut state = GameStatus::Running;
+    let engine_verison: &str = &*ENGINE_VERSION;
 
-    let app_name = game_name.to_owned() + " - [" + ENGINE_NAME + " v"+ENGINE_VERSION+ " - "+ graphics_api+"]"; 
+    let app_name = game_name.to_owned() + " - [" + ENGINE_NAME + " v"+engine_verison+ " - "+ graphics_api+"]"; 
 
     // 1. The **winit::EventsLoop** for handling events.
     let mut events_loop = glium::glutin::event_loop::EventLoop::new();

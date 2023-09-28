@@ -56,6 +56,7 @@ impl App {
     pub fn run(mut self) -> Self {
         let args: Vec<String> = env::args().collect();
         let mut app_state = self.state.clone();
+        let engine_verison: &str = &*ENGINE_VERSION;
 
         if app_state == AppState::PreInit {
             self.add_systems(AppState::PreInit, || {
@@ -90,7 +91,7 @@ impl App {
             let name = format!("{} v{}", self.game_name, self.game_version);
             renderer::core::opengl::create_opengl_window(&name, self.game_width, self.game_height);
         } else if args.contains(&String::from("--vulkano")) {
-            let name = format!("{} v{} - [{} v{} - Vulkan]", self.game_name, self.game_version, ENGINE_NAME, ENGINE_VERSION);
+            let name = format!("{} v{} - [{} v{} - Vulkan]", self.game_name, self.game_version, ENGINE_NAME, engine_verison);
             renderer::core::vulkano::create_vulkano_window(&name, self.game_width, self.game_height);
         } else {
             println!("No graphics API specified. Please specify a graphics API with the --opengl or --vulkano flag. Starting fallback OpenGL renderer...");

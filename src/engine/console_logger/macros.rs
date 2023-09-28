@@ -1,3 +1,4 @@
+
 #[macro_export]
 macro_rules! logger_message {
     ($color:expr, $prefix:expr, $($args:tt)*) => {
@@ -13,9 +14,9 @@ macro_rules! logger_message {
 #[macro_export]
 macro_rules! logger_info {
     ($($args:tt)*) => {
-        let color = metadata::COLOR_GREEN;
-        let prefix = set_color(color, "[WARN] ");
-        let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+        let color = COLOR_GREEN;
+        let prefix = set_color(color, "[INFO] ");
+        let time = set_color(COLOR_DARK_GREY, get_time().as_str())+ " ";
         let msg = reset_color() +format_args!($($args)*).to_string().as_str();
 
         let log_message = format!("{}{}{}", time, prefix, msg);
@@ -39,10 +40,9 @@ macro_rules! logger_warn {
 #[macro_export]
 macro_rules! logger_error {
     ($($args:tt)*) => {
-        let color =  metadata::COLOR_RED;
-        let prefix = "Error";
+        let color =  COLOR_RED;
         let prefix = set_color(color, "[ERROR] ");
-        let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+        let time = set_color(COLOR_DARK_GREY, get_time().as_str())+ " ";
         let msg = reset_color() +format_args!($($args)*).to_string().as_str();
 
         let log_message = format!("{}{}{}", time, prefix, msg);

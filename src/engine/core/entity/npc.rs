@@ -1,6 +1,6 @@
 use glium::{Surface, implement_vertex, uniform};
 
-use crate::engine::console_logger::Logger;
+use crate::engine::console_logger::logger;
 
 
 
@@ -20,6 +20,7 @@ struct NPCSprite {
 // you must pass the list of members to the macro
 implement_vertex!(NPCSprite, position);
 
+#[allow(dead_code)]
 impl NPC{
     pub fn new(display: glium::Display) -> NPC {
         NPC {
@@ -56,7 +57,7 @@ impl NPC{
         let aspect_ratio = window_width as f32 / window_height as f32;
 
         // Calculate the desired square size in window coordinates
-        let desired_square_size = self.sprite_size / window_width as f32;
+        let _desired_square_size = self.sprite_size / window_width as f32;
 
         // Create a view matrix to control the aspect ratio
         let view_matrix = na::Matrix4::new(
@@ -122,10 +123,10 @@ impl NPC{
             glium::glutin::event::WindowEvent::KeyboardInput { input, .. } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
-                        glium::glutin::event::VirtualKeyCode::U => {Logger::info("Pressed U"); self.velocity[1] = 0.05},
-                        glium::glutin::event::VirtualKeyCode::H => {Logger::info("Pressed H"); self.velocity[0] = -0.05},
-                        glium::glutin::event::VirtualKeyCode::J => {Logger::info("Pressed J"); self.velocity[1] = -0.05},
-                        glium::glutin::event::VirtualKeyCode::K => {Logger::info("Pressed K"); self.velocity[0] = 0.05},
+                        glium::glutin::event::VirtualKeyCode::U => {logger::info("Pressed U"); self.velocity[1] = 0.05},
+                        glium::glutin::event::VirtualKeyCode::H => {logger::info("Pressed H"); self.velocity[0] = -0.05},
+                        glium::glutin::event::VirtualKeyCode::J => {logger::info("Pressed J"); self.velocity[1] = -0.05},
+                        glium::glutin::event::VirtualKeyCode::K => {logger::info("Pressed K"); self.velocity[0] = 0.05},
                         _ => (),
                     }
                 }

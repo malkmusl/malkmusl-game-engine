@@ -1,8 +1,9 @@
 use crate::engine::core::entity::player::Player;
 
+
 pub fn update_camera_follow_player(
     player: &mut Player,
-    frame: &mut glium::Frame,
+    _frame: &mut glium::Frame,
     player_position: [f32; 2],
 ) {
     // Get the current window size
@@ -21,7 +22,7 @@ pub fn update_camera_follow_player(
     );
 
     // Create a camera transformation matrix to center on the player
-    let camera_matrix = na::Matrix4::new_translation(&na::Vector3::new(
+    let _camera_matrix = na::Matrix4::new_translation(&na::Vector3::new(
         -camera_position.x,
         -camera_position.y,
         0.0,

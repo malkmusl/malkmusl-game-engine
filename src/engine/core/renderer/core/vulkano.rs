@@ -8,7 +8,8 @@ use vulkano::memory::allocator::StandardMemoryAllocator;
 use vulkano::buffer::{Buffer, BufferCreateInfo, BufferUsage};
 use vulkano::memory::allocator::{AllocationCreateInfo, MemoryUsage};
 
-pub fn create_vulkano_window(app_name: &str, game_width: f64, game_height: f64) {
+#[allow(dead_code)]
+pub fn create_vulkano_window(_app_name: &str, _game_width: f64, _game_height: f64) {
     let library = VulkanLibrary::new().expect("no local Vulkan library/DLL");
     let instance = Instance::new(library, InstanceCreateInfo::default())
     .expect("failed to create instance");
@@ -46,12 +47,12 @@ pub fn create_vulkano_window(app_name: &str, game_width: f64, game_height: f64) 
     )
     .expect("failed to create device");
 
-    let queue = queues.next().unwrap();
+    let _queue = queues.next().unwrap();
 
     let memory_allocator = StandardMemoryAllocator::new_default(device.clone());
 
     let data: i32 = 12;
-    let buffer = Buffer::from_data(
+    let _buffer = Buffer::from_data(
         &memory_allocator,
         BufferCreateInfo {
             usage: BufferUsage::UNIFORM_BUFFER,

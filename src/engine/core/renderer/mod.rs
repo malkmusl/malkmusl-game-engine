@@ -1,3 +1,3 @@
 pub mod core;
 pub mod camera;
-pub mod D2;
+pub mod d2;

@@ -8,7 +8,7 @@ struct MyVertex {
 // you must pass the list of members to the macro
 implement_vertex!(MyVertex, position);
 
-
+#[allow(dead_code)]
 pub fn draw_square_v2(display: glium::Display, frame: &mut Frame) {
     let vertex_buffer = glium::VertexBuffer::new(&display, &[
         MyVertex { position: [-0.5, -0.5] },
@@ -72,7 +72,7 @@ pub fn draw_square_grid(
     let aspect_ratio = window_width as f32 / window_height as f32;
 
     // Calculate the desired square size in window coordinates
-    let desired_square_size = square_size / window_width as f32;
+    let _desired_square_size = square_size / window_width as f32;
 
     // Create a view matrix to control the aspect ratio
     let view_matrix = na::Matrix4::new(

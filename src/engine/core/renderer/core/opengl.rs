@@ -1,11 +1,11 @@
 extern crate glium;
 
 use glium::Frame;
-use crate::engine::console_logger::Logger;
+use crate::engine::console_logger::logger;
 use crate::engine::core::entity::npc;
 use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC};
 use crate::engine::core::entity::player;
-use crate::engine::core::renderer::D2::testing;
+use crate::engine::core::renderer::d2::testing;
 use crate::engine::core::renderer::camera::camera2d;
 
 use super::GameStatus;
@@ -42,7 +42,7 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
                     glium::glutin::event::WindowEvent::CloseRequested => {
                         *control_flow = glium::glutin::event_loop::ControlFlow::Exit;
                         state = GameStatus::Stopped;
-                        Logger::game_state(state, 0);
+                        logger::game_state(state, 0);
                     }
                     _ => {
                         if state == GameStatus::Running {
@@ -60,10 +60,10 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
                                 if input.state == glium::glutin::event::ElementState::Pressed {
                                     if state == GameStatus::Running{
                                         state = GameStatus::Paused;
-                                        Logger::game_state(state, 21);
+                                        logger::game_state(state, 21);
                                     }else{
                                         state = GameStatus::Running;
-                                        Logger::game_state(state, 22);
+                                        logger::game_state(state, 22);
                                     }
                                 }
                             }

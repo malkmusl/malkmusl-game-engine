@@ -1,6 +1,6 @@
 use glium::{Surface, implement_vertex, uniform};
 
-use crate::engine::console_logger::Logger;
+use crate::engine::console_logger::logger;
 
 pub const PLAYER_DEBUG: bool = false;
 pub const PLAYER_MOVEMENT_DEBUG: bool = false;
@@ -21,7 +21,7 @@ struct PlayerSprite {
 
 // you must pass the list of members to the macro
 implement_vertex!(PlayerSprite, position);
-
+#[allow(dead_code)]
 impl Player{
     pub fn new(display: glium::Display, name: String) -> Player {
         Player {
@@ -86,7 +86,7 @@ impl Player{
         let aspect_ratio = window_width as f32 / window_height as f32;
 
         // Calculate the desired square size in window coordinates
-        let desired_square_size = self.sprite_size / window_width as f32;
+        let _desired_square_size = self.sprite_size / window_width as f32;
 
         // Create a view matrix to control the aspect ratio
         let view_matrix = na::Matrix4::new(
@@ -152,10 +152,10 @@ impl Player{
             glium::glutin::event::WindowEvent::KeyboardInput { input, .. } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
-                        glium::glutin::event::VirtualKeyCode::W => {Logger::debug_player_movement(self, "W"); self.velocity[1] = 0.1},
-                        glium::glutin::event::VirtualKeyCode::A => {Logger::debug_player_movement(self, "A"); self.velocity[0] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::S => {Logger::debug_player_movement(self, "S"); self.velocity[1] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::D => {Logger::debug_player_movement(self, "D"); self.velocity[0] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::W => {logger::debug_player_movement(self, "W"); self.velocity[1] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::A => {logger::debug_player_movement(self, "A"); self.velocity[0] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::S => {logger::debug_player_movement(self, "S"); self.velocity[1] = -0.1},
+                        glium::glutin::event::VirtualKeyCode::D => {logger::debug_player_movement(self, "D"); self.velocity[0] = 0.1},
                         _ => (),
                     }
                 }

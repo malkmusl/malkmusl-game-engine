@@ -1,2 +1,2 @@
-pub mod Logger;
+pub mod logger;
 pub mod macros;

@@ -1,11 +1,12 @@
 extern crate glium;
 
 use glium::Frame;
-use crate::engine::console_logger::Logger;
+use crate::engine::console_logger::logger;
 use crate::engine::core::entity::npc;
 use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC};
 use crate::engine::core::entity::player;
-use crate::engine::core::renderer::D2::testing;
+use crate::engine::core::renderer::d2::testing;
+use crate::engine::core::renderer::camera::camera2d;
 
 use super::GameStatus;
 
@@ -29,7 +30,6 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
     //    window with the events_loop.
     let display = glium::Display::new(wb, cb, &events_loop).unwrap();
 
-
     let mut player = player::Player::new(display.clone(), "makmusl".to_string());
     let mut npc = npc::NPC::new(display.clone());
     
@@ -42,7 +42,7 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
                     glium::glutin::event::WindowEvent::CloseRequested => {
                         *control_flow = glium::glutin::event_loop::ControlFlow::Exit;
                         state = GameStatus::Stopped;
-                        Logger::game_state(state, 0);
+                        logger::game_state(state, 0);
                     }
                     _ => {
                         if state == GameStatus::Running {
@@ -60,10 +60,10 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
                                 if input.state == glium::glutin::event::ElementState::Pressed {
                                     if state == GameStatus::Running{
                                         state = GameStatus::Paused;
-                                        Logger::game_state(state, 21);
+                                        logger::game_state(state, 21);
                                     }else{
                                         state = GameStatus::Running;
-                                        Logger::game_state(state, 22);
+                                        logger::game_state(state, 22);
                                     }
                                 }
                             }
@@ -97,6 +97,7 @@ fn update_content(display: glium::Display,player: &mut player::Player, npc: &mut
 
 fn update_player(player: &mut player::Player, frame: &mut Frame) {
     player.update(frame);
+    camera2d::update_camera_follow_player(player, frame, player.position)
 }
 
 fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
@@ -105,6 +106,6 @@ fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
 
 fn update_background_tiles(display: glium::Display, frame: &mut Frame){
     //background_tiles::draw(display.clone(), frame, 10, 10, 0.5);
-    testing::simple_square::draw_square_v2(display.clone(), frame);
+    testing::simple_square::draw_square_grid(&display, frame, 1, 3, 0.2);
 
 }

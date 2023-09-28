@@ -7,11 +7,11 @@ pub const PLAYER_MOVEMENT_DEBUG: bool = false;
 
 #[derive(Clone)]
 pub struct Player {
-    display: glium::Display,
+    pub display: glium::Display,
     pub name: String,
     pub position: [f32; 2],
     velocity: [f32; 2],
-    pub sprite_size: [f32; 2],
+    pub sprite_size: f32 ,
 }
 
 #[derive(Copy, Clone)]
@@ -29,7 +29,7 @@ impl Player{
             name: name,
             position: [0.0, 0.0],
             velocity: [0.0, 0.0],
-            sprite_size: [0.0, 0.0],
+            sprite_size: 0.0,
         }
         
     }
@@ -45,13 +45,59 @@ impl Player{
     pub fn update(&mut self, frame: &mut glium::Frame) {
         self.position[0] += self.velocity[0];
         self.position[1] += self.velocity[1];
-        self.sprite_size = [0.5, 0.5];
+        self.sprite_size = 0.1;
         self.set_velocity(0.0, 0.0);
         self.draw_sprite(frame);
     }
 
-    pub fn draw_sprite(&mut self, frame: &mut glium::Frame) {
-        let half_size = self.sprite_size[0] / 2.0;
+    pub fn update_view_matrix(&mut self) -> na::Matrix4<f32> {
+        // Get the current window size
+        let (window_width, window_height) = self.display.get_framebuffer_dimensions();
+    
+        // Calculate the aspect ratio
+        let aspect_ratio = window_width as f32 / window_height as f32;
+    
+        // Calculate the desired square size in window coordinates
+        let desired_square_size = self.sprite_size / window_width as f32;
+    
+        // Calculate the position to center the viewport on the player
+        let camera_position = na::Point2::new(
+            self.position[0] - (window_width as f32 * 0.5 * desired_square_size),
+            self.position[1] - (window_height as f32 * 0.5 * desired_square_size / aspect_ratio),
+        );
+    
+        // Create a view matrix to center the viewport on the player
+        let view_matrix = na::Matrix4::new_translation(&na::Vector3::new(
+            -camera_position.x,
+            -camera_position.y,
+            0.0,
+        ));
+    
+        view_matrix
+    }
+    
+
+    pub fn draw_sprite(&mut self, frame: &mut glium::Frame, ) {
+
+        // Get the current window size
+        let (window_width, window_height) = self.display.get_framebuffer_dimensions();
+
+        // Calculate the aspect ratio
+        let aspect_ratio = window_width as f32 / window_height as f32;
+
+        // Calculate the desired square size in window coordinates
+        let desired_square_size = self.sprite_size / window_width as f32;
+
+        // Create a view matrix to control the aspect ratio
+        let view_matrix = na::Matrix4::new(
+            1.0, 0.0, 0.0, 0.0,
+            0.0, aspect_ratio, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        );  
+
+
+        let half_size = self.sprite_size / 2.0;
         let vertex_buffer = glium::VertexBuffer::new(&self.display, &[
             PlayerSprite { position: [-half_size + self.position[0], -half_size + self.position[1]] },
             PlayerSprite { position: [half_size + self.position[0], -half_size + self.position[1]] },
@@ -69,11 +115,10 @@ impl Player{
             #version 140
 
             in vec2 position;
-            uniform vec2 spriteSize;
+            uniform mat4 view;  // Uniform view matrix for aspect ratio control
 
             void main() {
-                vec2 scaledPosition = position * spriteSize;
-                gl_Position = vec4(scaledPosition, 0.0, 2.0);
+                gl_Position = view * vec4(position, 0.0, 1.0);
             }
         "#;
     
@@ -91,7 +136,7 @@ impl Player{
     
         // Set the sprite_size uniform
         let uniforms = uniform! {
-            spriteSize: self.sprite_size,
+            view: *view_matrix.as_ref(),
         };
         frame.draw(
             &vertex_buffer,

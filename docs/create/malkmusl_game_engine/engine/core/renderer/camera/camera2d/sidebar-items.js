@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["update_camera_follow_player"]};

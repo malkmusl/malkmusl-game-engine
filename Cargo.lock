@@ -686,21 +686,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "glium-tutorial"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "glium",
- "glutin",
- "image",
- "na",
- "rand",
- "tokio",
- "vulkano",
- "winit",
-]
-
-[[package]]
 name = "glutin"
 version = "0.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -969,6 +954,21 @@ name = "log"
 version = "0.4.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
+
+[[package]]
+name = "malkmusl-game-engine"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "glium",
+ "glutin",
+ "image",
+ "na",
+ "rand",
+ "tokio",
+ "vulkano",
+ "winit",
+]
 
 [[package]]
 name = "malloc_buf"

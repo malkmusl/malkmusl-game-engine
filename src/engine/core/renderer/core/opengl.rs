@@ -32,15 +32,6 @@ use super::GameStatus;
 
 #[allow(unused_mut)]
 pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) {
-    // ... (rest of the code)
-}
-```
-
-This comment provides a high-level overview of what the function does, its arguments, and its importance within the game's structure.
-
-
-#[allow(unused_mut)]
-pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) {
     let graphics_api = "OpenGL";
     let mut state = GameStatus::Running;
     let engine_verison: &str = &*ENGINE_VERSION;

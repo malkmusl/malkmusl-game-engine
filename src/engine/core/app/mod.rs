@@ -26,6 +26,38 @@ impl ToString for AppState {
     }
 }
 
+/// The `App` struct represents the core of a game application, managing its state and systems.
+///
+/// This implementation provides essential functionality for creating, configuring, and running a game application.
+/// It allows you to initialize the game environment, register system functions for different application states,
+/// and execute those systems   based on the current state. Additionally, it handles the selection of graphics APIs
+/// via command-line arguments and transitions the application state from `PreInit` to `Init` and finally to `Running`.
+///
+/// # Examples
+///
+/// ```
+/// // Create an instance of the game application
+/// let mut game = App::new("MyGame", "1.0", 800.0, 600.0, true);
+///
+/// // Register and execute system functions
+/// game.add_systems(AppState::Init, || {
+///     // Initialization logic goes here
+/// });
+///
+/// let state_transition = game.enable_system();
+///
+/// if state_transition {
+///     // The state transition from Init to Running occurred
+///     // Perform additional actions here if needed
+/// }
+///
+/// // Run the game application
+/// let updated_game = game.run();
+/// ```
+///
+/// In this example, the `App` struct is used to create and manage a game application, including initializing systems
+/// and running the application loop.
+
 #[derive(Clone)]
 pub(crate) struct App {
     game_name: String,
@@ -38,6 +70,20 @@ pub(crate) struct App {
 }
 #[allow(dead_code, unused_assignments, unused_variables)]
 impl App {
+
+    /// Creates a new instance of the `App` struct with the specified parameters.
+    ///
+    /// # Arguments
+    ///
+    /// * `game_name` - A string representing the name of the game.
+    /// * `game_version` - A string representing the version of the game.
+    /// * `game_width` - The width of the game window as a floating-point number.
+    /// * `game_height` - The height of the game window as a floating-point number.
+    /// * `debug` - A boolean indicating whether debug mode is enabled.
+    ///
+    /// # Returns
+    ///
+    /// A new `App` instance initialized with the provided values and default state.
 
     pub fn new(game_name: &str, game_version: &str, game_width: f64, game_height: f64, debug: bool) -> Self {
         let args: Vec<String> = env::args().collect();
@@ -52,6 +98,28 @@ impl App {
         };
         app
     }
+
+    /// Runs the game application, initializing systems based on the current application state and command-line arguments.
+    ///
+    /// This function sets up the game environment, initializes necessary systems, and creates the game window based on the specified or default graphics API.
+    /// It also transitions the application state from `PreInit` to `Init` and finally to `Running` as the game progresses.
+    ///
+    /// # Returns
+    ///
+    /// A new `App` instance representing the updated game application state after running.
+    ///
+    /// # Remarks
+    ///
+    /// - The function checks for command-line arguments to determine the graphics API to use (`--opengl` or `--vulkano`) or defaults to OpenGL if none are specified.
+    /// - Different systems are initialized based on the current application state, and messages are printed to indicate the loading process.
+    /// - The `AppState` enum is used to manage the application state transitions.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// let game = App::new("MyGame", "1.0", 800.0, 600.0, true);
+    /// let updated_game = game.run();
+    /// ```
 
     pub fn run(mut self) -> Self {
         let args: Vec<String> = env::args().collect();
@@ -109,9 +177,69 @@ impl App {
         }
     }
 
+    /// Adds a system function to the game application for a specific application state.
+    ///
+    /// This function allows you to register a system function to be executed when the game transitions
+    /// to a specific application state. Systems are functions that perform tasks or updates related to
+    /// specific game states, such as initialization or running the game loop.
+    ///
+    /// # Arguments
+    ///
+    /// * `state` - The target application state for which the system function will be executed.
+    /// * `system` - A function that represents the system to be executed when the specified state is reached.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// // Define a custom system function
+    /// fn custom_init_system() {
+    ///     // Initialization logic goes here
+    /// }
+    ///
+    /// // Create an instance of the game application
+    /// let mut game = App::new("MyGame", "1.0", 800.0, 600.0, true);
+    ///
+    /// // Register the custom system to run during the Init state
+    /// game.add_systems(AppState::Init, custom_init_system);
+    /// ```
+    ///
+    /// In this example, the `custom_init_system` function will be executed when the game transitions to the `Init` state.
+
     pub fn add_systems(&mut self, state: AppState, system: fn()) {
         self.systems.push((state, system));
     }
+
+    /// Executes registered system functions based on the current application state.
+    ///
+    /// This function iterates through the registered system functions and executes the one associated
+    /// with the current application state. It is typically called to perform specific tasks or updates
+    /// during different stages of the game, such as initialization or running the game loop.
+    ///
+    /// # Returns
+    ///
+    /// A boolean indicating whether the state transition from `Init` to `Running` occurred during the execution.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// // Create an instance of the game application
+    /// let mut game = App::new("MyGame", "1.0", 800.0, 600.0, true);
+    ///
+    /// // Register and execute system functions
+    /// game.add_systems(AppState::Init, || {
+    ///     // Initialization logic goes here
+    /// });
+    ///
+    /// let state_transition = game.enable_system();
+    ///
+    /// if state_transition {
+    ///     // The state transition from Init to Running occurred
+    ///     // Perform additional actions here if needed
+    /// }
+    /// ```
+    ///
+    /// In this example, the `enable_system` function executes registered system functions based on the
+    /// current state, and it returns `true` when transitioning from `Init` to `Running`.
 
     pub fn enable_system(&mut self) -> bool {
         // Code to run the app based on the current state and systems

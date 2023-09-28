@@ -84,7 +84,7 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
         }        
     });
 }
-fn update_content(display: glium::Display,player: &mut player::Player, npc: &mut npc::NPC){
+pub fn update_content(display: glium::Display,player: &mut player::Player, npc: &mut npc::NPC){
     let mut frame = display.draw();
     //draw_squareV2(display.clone(), &mut frame);
     update_background_tiles(display.clone(), &mut frame);
@@ -95,16 +95,16 @@ fn update_content(display: glium::Display,player: &mut player::Player, npc: &mut
 
 
 
-fn update_player(player: &mut player::Player, frame: &mut Frame) {
+pub fn update_player(player: &mut player::Player, frame: &mut Frame) {
     player.update(frame);
     camera2d::update_camera_follow_player(player, frame, player.position)
 }
 
-fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
+pub fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
     npc.update(&mut frame);
 }
 
-fn update_background_tiles(display: glium::Display, frame: &mut Frame){
+pub fn update_background_tiles(display: glium::Display, frame: &mut Frame){
     //background_tiles::draw(display.clone(), frame, 10, 10, 0.5);
     testing::simple_square::draw_square_grid(&display, frame, 1, 3, 0.2);
 

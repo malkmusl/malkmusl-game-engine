@@ -9,13 +9,12 @@ description= "A simple Rust Game Engine Supporting OpenGL and Vulkan"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# local_glium = { path = "../../glium" }
-glutin = "*"
+glutin = "0.30.10"
 glium = "0.32.1"
-winit = "*"
+winit = "0.27.5"
 vulkano = "0.33.0"
-rand = "*"
-image = "*"
+rand = "0.8.5"
+image = "0.24.7"
 chrono = "0.4"
 tokio = { version = "1", features = ["full"] }
 na = "0.32.2"

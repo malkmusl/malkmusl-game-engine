@@ -1,15 +1,17 @@
+// Import the lazy_static crate for static variable initialization
 extern crate lazy_static;
 use lazy_static::lazy_static;
+
+// Import necessary modules for file operations
 use std::fs::File;
 use std::io::Read;
 
-
-// crate const variables
+// Define crate-level constant variables
 pub const ENGINE_NAME: &str = "malkmusl Rust Game Engine";
 pub const VSYNC: bool = false;
 pub const DEBUG: bool = false;
 
-// crate const colors
+// Define a structure for representing colors
 pub struct Color {
     pub red: f32,
     pub green: f32,
@@ -17,6 +19,7 @@ pub struct Color {
     pub alpha: f32,
 }
 
+// Define crate-level constant colors
 pub const COLOR_RED: Color = Color { red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0 };
 pub const COLOR_GREEN: Color = Color { red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0 };
 pub const COLOR_YELLOW: Color = Color { red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0 };
@@ -29,8 +32,7 @@ pub const COLOR_WHITE: Color = Color { red: 1.0, green: 1.0, blue: 1.0, alpha: 1
 pub const COLOR_BLACK: Color = Color { red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0 };
 pub const COLOR_DARK_GREY: Color = Color { red: 0.25, green: 0.25, blue: 0.25, alpha: 1.0 };
 
-
-// Declare a static variable for the engine version
+// Declare a static variable for the engine version using lazy_static
 lazy_static! {
     pub static ref ENGINE_VERSION: String = {
         // Use the get_cargo_toml_version function to read the version
@@ -41,7 +43,7 @@ lazy_static! {
     };
 }
 
-
+// Function to read the version from Cargo.toml
 fn get_cargo_toml_version() -> Option<String> {
     // Open the Cargo.toml file
     let mut toml_file = File::open("Cargo.toml").ok()?;

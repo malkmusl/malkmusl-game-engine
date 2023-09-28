@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["draw_square_grid","draw_square_v2"],"struct":["MyVertex"]};

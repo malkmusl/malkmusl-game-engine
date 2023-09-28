@@ -2,6 +2,9 @@
 name = "malkmusl-game-engine"
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE.md"
+description= "A simple Rust Game Engine Supporting OpenGL and Vulkan"
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

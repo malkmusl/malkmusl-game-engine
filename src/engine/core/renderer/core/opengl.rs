@@ -1,6 +1,7 @@
 extern crate glium;
 
 use glium::Frame;
+use crate::engine::assets_loader;
 use crate::engine::console_logger::logger;
 use crate::engine::core::entity::npc;
 use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC};
@@ -218,6 +219,11 @@ pub fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
 
 pub fn update_background_tiles(display: glium::Display, frame: &mut Frame){
     //background_tiles::draw(display.clone(), frame, 10, 10, 0.5);
-    testing::simple_square::draw_square_grid(&display, frame, 1, 3, 0.2);
+    //testing::simple_square::draw_square_grid(&display, frame, 1, 3, 0.2);
+
+    let texture = assets_loader::loader::load_texture(&display, "moss_block.png");
+
+    // Call the draw_square_grid_with_texture function with the loaded texture
+    testing::simple_square::draw_square_grid_with_texture(&display, frame, 5, 1, 0.2, &texture);
 
 }

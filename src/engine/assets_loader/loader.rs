@@ -1,4 +1,5 @@
 extern crate lazy_static;
+use glium::Display;
 use lazy_static::lazy_static;
 
 use std::fs;
@@ -17,7 +18,7 @@ lazy_static! {
     };
 }
 
-pub fn load_texture(){
+pub fn dir_exist(){
     if let Ok(metadata) = fs::metadata(ASSET_FOLDER) {
         if metadata.is_dir() {
             logger_info!("{}{} The directory '{}' exists.", *ASSET_PREFIX, reset_color(), ASSET_FOLDER);
@@ -48,3 +49,16 @@ pub fn list_files() {
         eprintln!("Error reading directory: {}", ASSET_FOLDER);
     }
 }
+
+pub fn load_texture(display: &Display, texture_name: &str) -> glium::texture::SrgbTexture2d {
+    let asset_path = format!("{}/{}", ASSET_FOLDER, texture_name);
+    let file_contents = std::fs::read(&asset_path).expect("Failed to read file");
+    let image = image::load(std::io::Cursor::new(&file_contents), image::ImageFormat::Png)
+        .unwrap()
+        .to_rgba8();
+    let image_dimensions = image.dimensions();
+    let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimensions);
+    let texture = glium::texture::SrgbTexture2d::new(display, image).unwrap();
+    texture
+}
+

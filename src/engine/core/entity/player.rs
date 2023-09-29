@@ -10,6 +10,7 @@ pub struct Player {
     pub display: glium::Display,
     pub name: String,
     pub position: [f32; 2],
+    pub world_position: [f32; 2],
     velocity: [f32; 2],
     pub sprite_size: f32 ,
 }
@@ -28,6 +29,7 @@ impl Player{
             display: display,
             name: name,
             position: [0.0, 0.0],
+            world_position: [0.0, 0.0],
             velocity: [0.0, 0.0],
             sprite_size: 0.0,
         }
@@ -43,14 +45,14 @@ impl Player{
     }
 
     pub fn update(&mut self, frame: &mut glium::Frame) {
-        self.position[0] += self.velocity[0];
-        self.position[1] += self.velocity[1];
+        self.world_position[0] += self.velocity[0];
+        self.world_position[1] += self.velocity[1];
         self.sprite_size = 0.1;
         self.set_velocity(0.0, 0.0);
         self.draw_sprite(frame);
     }
 
-    pub fn update_view_matrix(&mut self) -> na::Matrix4<f32> {
+    pub fn update_camera(&mut self) -> na::Matrix4<f32> {
         // Get the current window size
         let (window_width, window_height) = self.display.get_framebuffer_dimensions();
     
@@ -62,8 +64,8 @@ impl Player{
     
         // Calculate the position to center the viewport on the player
         let camera_position = na::Point2::new(
-            self.position[0] - (window_width as f32 * 0.5 * desired_square_size),
-            self.position[1] - (window_height as f32 * 0.5 * desired_square_size / aspect_ratio),
+            self.world_position[0] - (window_width as f32 * 0.5 * desired_square_size),
+            self.world_position[1] - (window_height as f32 * 0.5 * desired_square_size / aspect_ratio),
         );
     
         // Create a view matrix to center the viewport on the player
@@ -76,9 +78,7 @@ impl Player{
         view_matrix
     }
     
-
-    pub fn draw_sprite(&mut self, frame: &mut glium::Frame, ) {
-
+    pub fn get_view_matrix(&mut self)  -> na::Matrix4<f32>{
         // Get the current window size
         let (window_width, window_height) = self.display.get_framebuffer_dimensions();
 
@@ -94,9 +94,12 @@ impl Player{
             0.0, aspect_ratio, 0.0, 0.0,
             0.0, 0.0, 1.0, 0.0,
             0.0, 0.0, 0.0, 1.0,
-        );  
+        ); 
+        view_matrix
+    }
 
-
+    pub fn draw_sprite(&mut self, frame: &mut glium::Frame, ) {
+        let view_matrix = self.get_view_matrix();
         let half_size = self.sprite_size / 2.0;
         let vertex_buffer = glium::VertexBuffer::new(&self.display, &[
             PlayerSprite { position: [-half_size + self.position[0], -half_size + self.position[1]] },
@@ -152,10 +155,10 @@ impl Player{
             glium::glutin::event::WindowEvent::KeyboardInput { input, .. } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
-                        glium::glutin::event::VirtualKeyCode::W => {logger::debug_player_movement(self, "W"); self.velocity[1] = 0.1},
-                        glium::glutin::event::VirtualKeyCode::A => {logger::debug_player_movement(self, "A"); self.velocity[0] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::S => {logger::debug_player_movement(self, "S"); self.velocity[1] = -0.1},
-                        glium::glutin::event::VirtualKeyCode::D => {logger::debug_player_movement(self, "D"); self.velocity[0] = 0.1},
+                        glium::glutin::event::VirtualKeyCode::W => {logger::debug_player_movement(self, "W"); self.velocity[1] = 0.01},
+                        glium::glutin::event::VirtualKeyCode::A => {logger::debug_player_movement(self, "A"); self.velocity[0] = -0.01},
+                        glium::glutin::event::VirtualKeyCode::S => {logger::debug_player_movement(self, "S"); self.velocity[1] = -0.01},
+                        glium::glutin::event::VirtualKeyCode::D => {logger::debug_player_movement(self, "D"); self.velocity[0] = 0.01},
                         _ => (),
                     }
                 }

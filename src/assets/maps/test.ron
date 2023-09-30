@@ -1,0 +1,17 @@
+[
+    TileData(
+        position: [0.0, 0.0],
+        sprite_size: 0.1,
+        texture: "moss_block.png",
+    ),
+    TileData(
+        position: [1.0, 0.0],
+        sprite_size: 0.1,
+        texture: "moss_block.png",
+    ),
+    TileData(
+        position: [2.0, 0.0],
+        sprite_size: 0.1,
+        texture: "apple.png",
+    ),
+]

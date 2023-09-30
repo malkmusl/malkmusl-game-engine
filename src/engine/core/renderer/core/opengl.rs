@@ -1,15 +1,27 @@
 extern crate glium;
+extern crate lazy_static;
+
+use lazy_static::lazy_static;
 
 use glium::Frame;
 use crate::engine::assets_loader;
-use crate::engine::console_logger::logger;
+use crate::engine::console_logger::logger::{self, set_color};
 use crate::engine::core::entity::npc;
-use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC};
+use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC, COLOR_CYAN, self};
 use crate::engine::core::entity::player;
 use crate::engine::core::renderer::d2::{testing, background_tiles};
 use crate::engine::core::renderer::camera::camera2d;
 
 use super::GameStatus;
+
+lazy_static! {
+    pub static ref OPENGL_PREFIX: String = {
+        let prefix = "[Renderer - OpenGL]";
+        set_color(COLOR_CYAN, prefix)
+    };
+}
+
+pub static mut OPENGL_DEBUG: bool = true;
 
 /// Creates an OpenGL window for the game with the specified name, width, and height.
 /// This function sets up the necessary event loop, window parameters, OpenGL context,
@@ -38,23 +50,27 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
     let engine_verison: &str = &*ENGINE_VERSION;
 
     let app_name = game_name.to_owned() + " - [" + ENGINE_NAME + " v"+engine_verison+ " - "+ graphics_api+"]"; 
-
     // 1. The **winit::EventsLoop** for handling events.
+    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating EventLoop"))};
     let mut events_loop = glium::glutin::event_loop::EventLoop::new();
     // 2. Parameters for building the Window.
+    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating WindowBuilder"))};
     let wb = glium::glutin::window::WindowBuilder::new()
         .with_inner_size(glium::glutin::dpi::LogicalSize::new(game_width, game_height))
         .with_title(app_name);
     // 3. Parameters for building the OpenGL context.
+    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating ContextBuffer"))};
     let cb = glium::glutin::ContextBuilder::new().with_vsync(VSYNC);
     // 4. Build the Display with the given window and OpenGL context parameters and register the
     //    window with the events_loop.
-    let display = glium::Display::new(wb, cb, &events_loop).unwrap();
+    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating Display"))};
+    let display = glium::Display::new(wb, cb, &events_loop).expect(&logger::error_opengl("Failed to create Display"));
 
     let mut player = player::Player::new(display.clone(), "makmusl".to_string());
     let mut npc = npc::NPC::new(display.clone());
     
     // 5. start EventsLoop
+    println!("{}", logger::warn_opengl("Starting EventLoop"));
     events_loop.run(move |event, _, control_flow| {
         // 6. Handle events here
         match event {
@@ -137,7 +153,7 @@ pub fn update_content(display: glium::Display,player: &mut player::Player, npc: 
     update_background_tiles(display.clone(), &mut frame, player);
     update_player(player, &mut frame);
     //update_npc(npc, &mut frame);
-    frame.finish().unwrap();
+    frame.finish().expect(&logger::error_opengl("Failed to finish Frame"));
 }
 
 /// Updates the player object and its interaction with the game frame. This function
@@ -220,17 +236,29 @@ pub fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
 pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, player: &mut player::Player){
     //background_tiles::draw(display.clone(), frame, 10, 10, 0.5);
     //testing::simple_square::draw_square_grid(&display, frame, 1, 3, 0.2);
+    let _ = assets_loader::loader::load_tiles_from_file("test");
 
     let texture = assets_loader::loader::load_texture(&display, "moss_block.png");
     let texture2 = assets_loader::loader::load_texture(&display, "moss_block.png");
 
     // Call the draw_square_grid_with_texture function with the loaded texture
     //testing::simple_square::draw_square_grid_with_texture(&display, frame, 5, 5, 0.2, &texture);
-    //testing::simple_square::draw_square_grid_with_texture_and_player(&display, frame, 3, 3, 0.1, &texture, player);
+    //testing::simple_square::draw_square_grid_with_texture_and_player(&display, frame, 32, 32, 0.1, &texture, player);
+    
     let mut layer_0 = background_tiles::BackgroundTiles::new(display.clone());
     let tile_0 = background_tiles::Tile::new([0.0,0.0], 0.1, texture);
     let tile_1= background_tiles::Tile::new([1.0, 1.0], 0.1, texture2);
     layer_0.add_tile(tile_0);
     layer_0.add_tile(tile_1);
     layer_0.draw(frame, player);
+    
+}
+
+
+pub fn is_debugging_enabled() -> bool {
+    if metadata::DEBUG || unsafe { OPENGL_DEBUG } {
+        return true;
+    }else{
+        return false;
+    }
 }

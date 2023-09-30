@@ -2,12 +2,18 @@ extern crate lazy_static;
 use glium::Display;
 use lazy_static::lazy_static;
 
+use ron::de::from_str;
+use ron::*;
+use std::io::Read;
+use serde::Deserialize;
+
 use std::fs;
+use std::fs::File;
 use std::ffi::OsString;
 
 use crate::engine::core::metadata::*;
-use crate::engine::console_logger::logger::*;
-use crate::{logger_info, logger_error};
+use crate::engine::console_logger::logger::{*, self};
+use crate::{logger_info_assetloader, logger_error_assetloader, logger_warn_assetloader};
 
 pub const ASSET_FOLDER: &str = "./src/assets";
 
@@ -21,12 +27,12 @@ lazy_static! {
 pub fn dir_exist(){
     if let Ok(metadata) = fs::metadata(ASSET_FOLDER) {
         if metadata.is_dir() {
-            logger_info!("{}{} The directory '{}' exists.", *ASSET_PREFIX, reset_color(), ASSET_FOLDER);
+            logger_info_assetloader!("The directory '{}' exists.", ASSET_FOLDER);
         } else {
-            logger_error!("{}{} '{}' is not a directory.", *ASSET_PREFIX, reset_color(), ASSET_FOLDER);
+            logger_warn_assetloader!("'{}' is not a directory.", ASSET_FOLDER);
         }
     } else {
-        logger_error!("{}{} The directory '{}' does not exist.", *ASSET_PREFIX, reset_color(), ASSET_FOLDER);
+        logger_error_assetloader!("The directory '{}' does not exist.", ASSET_FOLDER);
         let _ = fs::create_dir_all(ASSET_FOLDER);
     }   
 }
@@ -39,20 +45,20 @@ pub fn list_files() {
                 let file_name: OsString = entry.file_name();
                 if let Some(file_name_str) = file_name.to_str() {
                     let log_message = format!("Found file: {}", file_name_str);
-                    logger_info!("{}{} {}", *ASSET_PREFIX, reset_color(),  log_message);
+                    logger_info_assetloader!("{}", log_message);
                 } else {
-                    eprintln!("Invalid UTF-8 sequence in file name");
+                    logger_error_assetloader!("Invalid UTF-8 sequence in file name");
                 }
             }
         }
     } else {
-        eprintln!("Error reading directory: {}", ASSET_FOLDER);
+        logger_error_assetloader!("Error reading directory: {}", ASSET_FOLDER);
     }
 }
 
 pub fn load_texture(display: &Display, texture_name: &str) -> glium::texture::SrgbTexture2d {
     let asset_path = format!("{}/{}", ASSET_FOLDER, texture_name);
-    let file_contents = std::fs::read(&asset_path).expect("Failed to read file");
+    let file_contents = std::fs::read(&asset_path).expect(&logger::error("Failed to read file"));
     let image = image::load(std::io::Cursor::new(&file_contents), image::ImageFormat::Png)
         .unwrap()
         .to_rgba8();
@@ -62,3 +68,23 @@ pub fn load_texture(display: &Display, texture_name: &str) -> glium::texture::Sr
     texture
 }
 
+#[derive(Debug, Deserialize)]
+pub struct TileData {
+    position: [f32; 2],
+    sprite_size: f32,
+    texture_name: String,
+}
+
+pub fn load_tiles_from_file(map: &str) -> Result<Vec<TileData>, Box<dyn std::error::Error>> {
+    let file_path = format!("{}/maps/{}.ron", ASSET_FOLDER, map);
+    // Open the file
+    let mut file = File::open(file_path)?;
+    
+    // Read the file content into a string
+    let mut content = String::new();
+    file.read_to_string(&mut content)?;
+
+    // Deserialize the RON data into a Vec<TileData>
+    let tiles: Vec<TileData> = from_str(&content)?;
+    Ok(tiles)
+}

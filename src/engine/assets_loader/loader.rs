@@ -69,6 +69,7 @@ pub fn load_texture(display: &Display, texture_name: &str) -> glium::texture::Sr
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct TileData {
     position: [f32; 2],
     sprite_size: f32,

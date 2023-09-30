@@ -1,10 +1,44 @@
-use glium::{Frame, implement_vertex, uniform, Display, Surface, Program, VertexBuffer, IndexBuffer};
+use glium::{Frame, implement_vertex, uniform, Display, Surface, VertexBuffer, IndexBuffer};
 use glium::texture::SrgbTexture2d;
 
+use crate::engine::console_logger::logger;
 use crate::engine::core::entity::player::Player;
+use crate::engine::core::metadata;
+use crate::engine::core::renderer::core::opengl::OPENGL_DEBUG;
+
+static DEBUG_ONCE: bool = true;
+static mut IS_DEBUGED: bool = false;
+
+const VERTEX_SHADER_SRC: &str = r#"
+    #version 140
+    
+    in vec2 position;
+    out vec2 v_tex_coords;
+            
+    uniform mat4 view;
+    uniform mat4 camera;
+            
+    void main() {
+        gl_Position = view * camera * vec4(position, 0.0, 1.0);
+        v_tex_coords = position;
+    }
+"#;
+
+const FRAGMENT_SHADER_SRC: &str = r#"
+    #version 140
+    
+    in vec2 v_tex_coords;
+    out vec4 color;
+    
+    uniform sampler2D tex;
+    
+    void main() {
+        color = texture(tex, v_tex_coords);
+    }
+"#;
 
 #[derive(Copy, Clone)]
-struct TileVertex {
+pub struct TileVertex {
     position: [f32; 2],
 }
 
@@ -12,8 +46,10 @@ struct TileVertex {
 pub struct BackgroundTiles {
     display: Display,
     tiles: Vec<Tile>,
+    program: glium::Program,
     vertex_buffer: VertexBuffer<TileVertex>,
     index_buffer: IndexBuffer<u16>,
+    pub view_matrix: na::Matrix4<f32>,
 }
 
 #[allow(dead_code)]
@@ -27,114 +63,160 @@ implement_vertex!(TileVertex, position);
 
 impl BackgroundTiles {
     pub fn new(display: Display) -> Self {
+
+        let view_matrix = set_view_matrix(&display);
+
+        if  is_debugging_enabled(){println!("{}", logger::info_opengl("Creating BackgroundTiles ShaderProgram"))};
+        let program = glium::Program::from_source(&display, VERTEX_SHADER_SRC, FRAGMENT_SHADER_SRC, None)
+            .expect(&logger::error_opengl("Failed to create BackgroundTiles ShaderProgram"));
+
+        if  is_debugging_enabled(){println!("{}", logger::info_opengl("Creating BackgroundTiles VertexBuffer"))};
+        let vertex_buffer = glium::VertexBuffer::empty_persistent(&display, 1)
+            .expect(&logger::error_opengl("Failed to create BackgroundTiles VertexBuffer"));
+
+        if  is_debugging_enabled(){println!("{}", logger::info_opengl("Creating BackgroundTiles IndexBuffer"))}; 
+        let index_buffer = glium::IndexBuffer::empty_persistent(
+            &display,
+            glium::index::PrimitiveType::TriangleStrip,
+            1,
+        )
+        .expect(&logger::error_opengl("Failed to create BackgroundTiles IndexBuffer"));
+
         BackgroundTiles {
             display: display.clone(),
             tiles: Vec::new(),
-            vertex_buffer: VertexBuffer::empty_dynamic(&display, 0).unwrap(),
-            index_buffer: IndexBuffer::empty(&display, glium::index::PrimitiveType::TriangleStrip, 0).unwrap(),
+            vertex_buffer,
+            index_buffer,
+            program,
+            view_matrix,
         }
     }
 
+    #[allow(dead_code)]
     pub fn add_tile(&mut self, tile: Tile) {
         self.tiles.push(tile);
     }
 
-    pub fn draw(&mut self, frame: &mut Frame, player: &mut Player) {
-        // Clear the frame
-        frame.clear_color(0.0, 0.0, 0.0, 0.0);
-    
+    pub fn draw(
+        &mut self,
+        frame: &mut Frame,
+        rows: usize,
+        columns: usize,
+        square_size: f32,
+        texture: &glium::texture::SrgbTexture2d,
+        player: &mut Player,
+    ) {
         let mut vertices: Vec<TileVertex> = Vec::new();
         let mut indices: Vec<u16> = Vec::new();
-    
-        for tile in &self.tiles {
-            // Update vertex buffer
-            let half_size = tile.sprite_size / 2.0;
-            let square_vertices = vec![
-                TileVertex { position: [tile.position[0] - half_size, tile.position[1] - half_size] },
-                TileVertex { position: [tile.position[0] + half_size, tile.position[1] - half_size] },
-                TileVertex { position: [tile.position[0] + half_size, tile.position[1] + half_size] },
-                TileVertex { position: [tile.position[0] - half_size, tile.position[1] + half_size] },
-            ];
-    
-            let offset = vertices.len() as u16;
-    
-            for idx in 0..4 {
-                indices.push(offset + idx);
+
+        for i in 0..rows {
+            for j in 0..columns {
+                let x = j as f32 * square_size;
+                let y = i as f32 * square_size;
+
+                let square_vertices = vec![
+                    TileVertex { position: [x, y] },
+                    TileVertex { position: [x + square_size, y] },
+                    TileVertex { position: [x + square_size, y + square_size] },
+                    TileVertex { position: [x, y + square_size] },
+                ];
+
+                vertices.extend(square_vertices.iter());
+
+                let base_index = (i * columns + j) * 4;
+                let square_indices: Vec<u16> = vec![
+                    base_index as u16 + 1,
+                    base_index as u16 + 2,
+                    base_index as u16,
+                    base_index as u16 + 3,
+                ];
+
+                indices.extend(square_indices.iter());
             }
-    
-            vertices.extend(square_vertices.iter());
         }
-    
-        // Create new buffers
-        let vertex_buffer = VertexBuffer::new(&self.display, &vertices).unwrap();
-        let index_buffer = IndexBuffer::new(&self.display, glium::index::PrimitiveType::TriangleStrip, &indices).unwrap();
-    
-        // The rest of your code for shaders and drawing remains the same
-        let vertex_shader_src = r#"
-            #version 140
 
-            in vec2 position;
-            out vec2 v_tex_coords; // No explicit texture coordinates
+        self.vertex_buffer = glium::VertexBuffer::empty_persistent(&self.display, vertices.len())
+            .expect(&logger::error_opengl("Failed to create BackgroundTiles VertexBuffer"));
+        self.vertex_buffer.write(vertices.as_slice());
 
-            uniform mat4 view;    // Uniform view matrix for aspect ratio control
-            uniform mat4 camera;  // Uniform camera matrix for player movement
-
-            void main() {
-                // Apply both view and camera matrices to the vertex position
-                gl_Position = view * camera * vec4(position, 0.0, 1.0);
-
-                // Use vertex position as texture coordinates
-                v_tex_coords = position;
-
-                // Debugging print
-                // Uncomment the next line if you are using GLSL 4.3 or later
-                //printf("Position: %s\n", gl_Position);
-            }
-        "#;
-    
-        let fragment_shader_src = r#"
-            #version 140
-    
-            in vec2 v_tex_coords; // Receive position as texture coordinates
-            out vec4 color;
-    
-            uniform sampler2D tex; // Add a texture sampler uniform
-    
-            void main() {
-                color = texture(tex, v_tex_coords); // Sample the texture using position as texture coordinates
-            }
-        "#;
-    
-        let program = Program::from_source(&self.display, vertex_shader_src, fragment_shader_src, None)
-            .unwrap();
-    
-        // Pass the view matrix and texture as uniforms to the shader
-        let uniforms = uniform! {
-            view: *player.get_view_matrix().as_ref(),  // Assuming player has a get_view_matrix() method
-            camera: *player.update_camera().as_ref(),
-            tex: glium::uniforms::Sampler::new(&self.tiles[0].texture).magnify_filter(glium::uniforms::MagnifySamplerFilter::Nearest),
-            // Assuming all tiles share the same texture; adjust as needed
-        };
-    
-        // Draw all tiles
-        frame.draw(
-            &vertex_buffer,
-            &index_buffer,
-            &program,
-            &uniforms,
-            &Default::default(),
+        self.index_buffer = glium::IndexBuffer::empty_persistent(
+            &self.display,
+            glium::index::PrimitiveType::TriangleStrip,
+            indices.len(),
         )
-        .unwrap();
+        .expect(&logger::error_opengl("Failed to create BackgroundTiles IndexBuffer"));
+        self.index_buffer.write(indices.as_slice());
+
+        if is_debugging_enabled(){ 
+            println!("{}",format!("{} {}", logger::warn_opengl("Background Vertices length:"), vertices.len()));
+            println!("{}",format!("{} {}", logger::warn_opengl("Background Indices length"), indices.len()));
+
+            println!("{}",format!("{} {}", logger::warn_opengl("Background VertexBuffer size:"), self.vertex_buffer.get_size()));
+            println!("{}",format!("{} {}", logger::warn_opengl("Background IndexBuffer size:"), self.index_buffer.get_size()));
+        }
+        self.vertex_buffer.write(vertices.as_slice());
+
+        let camera_matrix = player.update_camera();
+
+        let uniforms = uniform! {
+            view: *self.view_matrix.as_ref(),
+            camera: *camera_matrix.as_ref(),
+            tex: texture,
+        };
+
+        frame.clear_color(0.0, 0.0, 0.0, 0.0);
+        frame
+            .draw(
+                &self.vertex_buffer,
+                &self.index_buffer,
+                &self.program,
+                &uniforms,
+                &Default::default(),
+            )
+            .expect(&logger::error_opengl("Failed to draw BackgroundTiles to Frame"));
+        if DEBUG_ONCE {unsafe { IS_DEBUGED = true };}
     }
-    
 }
 
 impl Tile {
+    #[allow(dead_code)]
     pub fn new(position: [f32; 2], sprite_size: f32, texture: SrgbTexture2d) -> Self {
         Tile {
             position,
             sprite_size,
             texture,
+        }
+    }
+}
+
+pub fn set_view_matrix(display: &Display) -> na::Matrix4<f32> {
+    let (window_width, window_height) = display.get_framebuffer_dimensions();
+    let aspect_ratio = window_width as f32 / window_height as f32;
+    let view_matrix = na::Matrix4::new(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, aspect_ratio, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    );
+    view_matrix
+}
+
+pub fn is_debugging_enabled() -> bool {
+    if !DEBUG_ONCE {
+        if metadata::DEBUG || unsafe { OPENGL_DEBUG } {
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        if !unsafe { IS_DEBUGED }{
+            if metadata::DEBUG || unsafe { OPENGL_DEBUG } {
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
         }
     }
 }

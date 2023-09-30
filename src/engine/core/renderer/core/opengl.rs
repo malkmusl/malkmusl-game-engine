@@ -3,7 +3,7 @@ extern crate lazy_static;
 
 use lazy_static::lazy_static;
 
-use glium::Frame;
+use glium::{Frame, Display};
 use crate::engine::assets_loader;
 use crate::engine::console_logger::logger::{self, set_color};
 use crate::engine::core::entity::npc;
@@ -19,6 +19,10 @@ lazy_static! {
         let prefix = "[Renderer - OpenGL]";
         set_color(COLOR_CYAN, prefix)
     };
+}
+
+struct OpenGLDisplay{
+    display: Display
 }
 
 pub static mut OPENGL_DEBUG: bool = true;

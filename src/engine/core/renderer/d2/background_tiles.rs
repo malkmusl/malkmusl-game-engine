@@ -7,7 +7,7 @@ use crate::engine::core::metadata;
 use crate::engine::core::renderer::core::opengl::OPENGL_DEBUG;
 
 static DEBUG_ONCE: bool = true;
-static mut IS_DEBUGED: bool = false;
+static mut IS_DEBUGED: bool = false; //always false
 
 const VERTEX_SHADER_SRC: &str = r#"
     #version 140

@@ -5,6 +5,8 @@ use lazy_static::lazy_static;
 
 use glium::{Frame, Display};
 use crate::engine::assets_loader;
+use crate::engine::assets_loader::texture_atlas::OUTSIDE_ATLAS;
+use crate::engine::assets_loader::texture_loader::TextureAtlas;
 use crate::engine::console_logger::logger::{self, set_color};
 use crate::engine::core::entity::npc;
 use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC, COLOR_CYAN, self};
@@ -244,13 +246,16 @@ pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, playe
     let _ = assets_loader::loader::load_tiles_from_file("test");
 
     let texture = assets_loader::loader::load_texture(&display, "moss_block.png");
-    let _texture2 = assets_loader::loader::load_texture(&display, "moss_block.png");
+
+    let atlas_texture = OUTSIDE_ATLAS.load_texture_from_atlas([2, 1], display.clone());
+
+    let mut background = background_tiles::BackgroundTiles::new(display);
+    background.draw(frame, 10, 10, 0.1, &atlas_texture, player);
+    
 
     // Call the draw_square_grid_with_texture function with the loaded texture
     //testing::simple_square::draw_square_grid_with_texture(&display, frame, 5, 5, 0.2, &texture);
     //testing::simple_square::draw_square_grid_with_texture_and_player(&display, frame, 32, 32, 0.1, &texture, player);
-    let mut background = background_tiles::BackgroundTiles::new(display);
-    background.draw(frame, 10, 10, 0.1, &texture, player);
     /*
     let mut layer_0 = background_tiles::BackgroundTiles::new(display.clone());
     let tile_0 = background_tiles::Tile::new([0.0,0.0], 0.1, texture);

@@ -1,12 +1,14 @@
 
 use chrono::Local;
+use crate::engine::assets_loader::loader::ASSET_PREFIX;
 use crate::engine::core::renderer::core::GAME_STATE_DEBUG;
 use crate::engine::core::entity::player::Player;
 use crate::engine::core::entity::player::{PLAYER_DEBUG, PLAYER_MOVEMENT_DEBUG};
-use crate::engine::core::metadata::DEBUG;
+use crate::engine::core::metadata::{DEBUG, COLOR_YELLOW, COLOR_CYAN};
 
 use crate::engine::core::metadata;
 use crate::engine::core::renderer::core::GameStatus;
+use crate::engine::core::renderer::core::opengl::OPENGL_PREFIX;
 
 /// Sets the color for a given text value and returns the formatted string.
 /// 
@@ -102,9 +104,31 @@ pub fn info(args: &str) -> String{
     let msg = reset_color() + &format!("{}", args);
 
     let log_message = format!("{}{}{}", time, prefix, msg);
-    println!("{}", log_message.as_str());
     log_message
 }
+
+pub fn info_assets(args: &str) -> String{
+    let color =  metadata::COLOR_GREEN;
+    let prefix = set_color(color, "[INFO] ");
+    let perfix_2 = set_color(COLOR_YELLOW, *&ASSET_PREFIX.as_str());
+    let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+    let msg = reset_color() + &format!(" {}", args);
+
+    let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+    log_message
+}
+
+pub fn info_opengl(args: &str) -> String{
+    let color =  metadata::COLOR_GREEN;
+    let prefix = set_color(color, "[INFO] ");
+    let perfix_2 = set_color(COLOR_CYAN, *&OPENGL_PREFIX.as_str());
+    let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+    let msg = reset_color() + &format!(" {}", args);
+
+    let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+    log_message
+}
+
 
 /// Logs a warning message with a timestamp and yellow "[WARN]" prefix.
 /// 
@@ -129,15 +153,35 @@ pub fn info(args: &str) -> String{
 /// ```
 pub fn warn(args: &str) -> String{
     let color =  metadata::COLOR_YELLOW;
-    let prefix = set_color(color, "[WARN] ");
+    let prefix = set_color(color, "[WARN]");
     let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
-    let msg = reset_color() + &format!("{}", args);
+    let msg = reset_color() + &format!(" {}", args);
 
     let log_message = format!("{}{}{}", time, prefix, msg);
-    println!("{}", log_message.as_str());
     log_message
 }
 
+pub fn warn_assets(args: &str) -> String{
+    let color =  metadata::COLOR_YELLOW;
+    let prefix = set_color(color, "[WARN] ");
+    let perfix_2 = set_color(COLOR_YELLOW, *&ASSET_PREFIX.as_str());
+    let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+    let msg = reset_color() + &format!("{}", args);
+
+    let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+    log_message
+}
+
+pub fn warn_opengl(args: &str) -> String{
+    let color =  metadata::COLOR_YELLOW;
+    let prefix = set_color(color, "[WARN] ");
+    let perfix_2 = set_color(COLOR_CYAN, *&OPENGL_PREFIX.as_str());
+    let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+    let msg = reset_color() + &format!(" {}", args);
+
+    let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+    log_message
+}
 /// Logs an error message with a timestamp and red "[ERROR]" prefix.
 /// 
 /// This function takes a message as input and logs it with an "[ERROR]" prefix
@@ -166,7 +210,28 @@ pub fn error(args: &str) -> String{
     let msg = reset_color() + &format!("{}", args);
 
     let log_message = format!("{}{}{}", time, prefix, msg);
-    println!("{}", log_message.as_str());
+    log_message
+}
+
+pub fn error_assets(args: &str) -> String{
+    let color =  metadata::COLOR_RED;
+    let prefix = set_color(color, "[ERROR] ");
+    let perfix_2 = set_color(COLOR_YELLOW, *&ASSET_PREFIX.as_str());
+    let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+    let msg = reset_color() + &format!("{}", args);
+
+    let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+    log_message
+}
+
+pub fn error_opengl(args: &str) -> String{
+    let color =  metadata::COLOR_RED;
+    let prefix = set_color(color, "[ERROR] ");
+    let perfix_2 = set_color(COLOR_CYAN, *&OPENGL_PREFIX.as_str());
+    let time = set_color(metadata::COLOR_DARK_GREY, get_time().as_str())+ " ";
+    let msg = reset_color() + &format!("{}", args);
+
+    let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
     log_message
 }
 

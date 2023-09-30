@@ -1,4 +1,4 @@
-
+#![allow(dead_code)]
 use chrono::Local;
 use crate::engine::assets_loader::loader::ASSET_PREFIX;
 use crate::engine::core::renderer::core::GAME_STATE_DEBUG;

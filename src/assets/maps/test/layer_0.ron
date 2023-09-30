@@ -1,0 +1,26 @@
+[
+    TileData(
+        position: [0.0, 0.0],               // current X and Y later maybe +Z
+        sprite_size: 0.1,                   // must defined for scaling
+        texture: "moss_block.png",          // for testing name.png later number in tileset
+        passable: NORMAL,                   // enums NOT NORMAL, HM,
+        encounter: -1,                      // -1 no encounter => Encounter Random 0 - 255
+        encounter_tables: [],               // tablenumber as in multiple possible
+    ),
+    TileData(
+        position: [1.0, 0.0],
+        sprite_size: 0.1,
+        texture: "moss_block.png",
+        passable: NORMAL,
+        encounter: -1, 
+        encounter_tables: [],
+    ),
+    TileData(
+        position: [2.0, 0.0],
+        sprite_size: 0.1,
+        texture: "apple.png",
+        passable: HM,
+        encounter: [20, 53, 60, 99, 120],   // sets the propability and encounter type like grass cave or water
+        encounter_tables: [],
+    ),
+]

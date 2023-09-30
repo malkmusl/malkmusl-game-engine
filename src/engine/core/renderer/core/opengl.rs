@@ -9,7 +9,7 @@ use crate::engine::console_logger::logger::{self, set_color};
 use crate::engine::core::entity::npc;
 use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC, COLOR_CYAN, self};
 use crate::engine::core::entity::player;
-use crate::engine::core::renderer::d2::{testing, background_tiles};
+use crate::engine::core::renderer::d2::background_tiles;
 use crate::engine::core::renderer::camera::camera2d;
 
 use super::GameStatus;
@@ -147,7 +147,7 @@ pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) 
 /// This function is a key part of the game loop, responsible for rendering and updating
 /// the visual elements of the game.
 
-pub fn update_content(display: glium::Display,player: &mut player::Player, npc: &mut npc::NPC){
+pub fn update_content(display: glium::Display,player: &mut player::Player, _npc: &mut npc::NPC){
     let mut frame = display.draw();
     //draw_squareV2(display.clone(), &mut frame);
     update_background_tiles(display.clone(), &mut frame, player);
@@ -206,6 +206,7 @@ pub fn update_player(player: &mut player::Player, frame: &mut Frame) {
 ///
 /// This function is essential for keeping the NPC character up-to-date within the game world.
 
+#[allow(dead_code)]
 pub fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
     npc.update(&mut frame);
 }
@@ -239,18 +240,22 @@ pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, playe
     let _ = assets_loader::loader::load_tiles_from_file("test");
 
     let texture = assets_loader::loader::load_texture(&display, "moss_block.png");
-    let texture2 = assets_loader::loader::load_texture(&display, "moss_block.png");
+    let _texture2 = assets_loader::loader::load_texture(&display, "moss_block.png");
 
     // Call the draw_square_grid_with_texture function with the loaded texture
     //testing::simple_square::draw_square_grid_with_texture(&display, frame, 5, 5, 0.2, &texture);
     //testing::simple_square::draw_square_grid_with_texture_and_player(&display, frame, 32, 32, 0.1, &texture, player);
-    
+    let mut background = background_tiles::BackgroundTiles::new(display);
+    background.draw(frame, 10, 10, 0.1, &texture, player);
+    /*
     let mut layer_0 = background_tiles::BackgroundTiles::new(display.clone());
     let tile_0 = background_tiles::Tile::new([0.0,0.0], 0.1, texture);
     let tile_1= background_tiles::Tile::new([1.0, 1.0], 0.1, texture2);
     layer_0.add_tile(tile_0);
     layer_0.add_tile(tile_1);
-    layer_0.draw(frame, player);
+    layer_0.draw(frame, player); 
+    */
+    
     
 }
 

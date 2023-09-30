@@ -1,8 +1,9 @@
 use glium::{Surface, implement_vertex, uniform, Display};
-use glutin::display;
 
-use crate::engine::{console_logger::logger, core::renderer::core::opengl};
+use crate::engine::{console_logger::logger, core::{renderer::core::opengl::{self, OPENGL_DEBUG}, metadata}};
 
+static DEBUG_ONCE: bool = true;
+static mut IS_DEBUGED: bool = false;
 pub const PLAYER_DEBUG: bool = false;
 pub const PLAYER_MOVEMENT_DEBUG: bool = false;
 
@@ -51,7 +52,7 @@ implement_vertex!(PlayerSprite, position);
 impl Player{
     pub fn new(display: glium::Display, name: String) -> Player {
 
-        if  opengl::is_debugging_enabled(){println!("{}", logger::info_opengl("Creating Player ShaderProgram"))};
+        if  is_debugging_enabled(){println!("{}", logger::info_opengl("Creating Player ShaderProgram"))};
         let program = glium::Program::from_source(&display, VERTEX_SHADER_SRC, FRAGMENT_SHADER_SRC, None).unwrap();
     
         if  opengl::is_debugging_enabled(){println!("{}", logger::info_opengl("Creating Player VertexBuffer"))};
@@ -62,13 +63,12 @@ impl Player{
             PlayerSprite { position: [-0.05, 0.05] },
         ]).expect(&logger::error_opengl("Failed to create Player VertexBuffer"));
     
-        if  opengl::is_debugging_enabled(){println!("{}", logger::info_opengl("Creating Player IndexBuffer"))};
+        if  is_debugging_enabled(){println!("{}", logger::info_opengl("Creating Player IndexBuffer"))};
         let index_buffer = glium::IndexBuffer::new(
             &display,
             glium::index::PrimitiveType::TriangleStrip,
             &[1 as u16, 2, 0, 3],
         ).expect(&logger::error_opengl("Failed to create Player IndexBuffer"));
-
 
         Player {
             display: display.clone(),
@@ -138,6 +138,12 @@ impl Player{
     }
     
     pub fn draw_sprite(&mut self, frame: &mut glium::Frame, ) {
+
+        if is_debugging_enabled(){ 
+            println!("{}",format!("{} {}", logger::warn_opengl("Player VertexBuffer size:"), self.vertex_buffer.get_size()));
+            println!("{}",format!("{} {}", logger::warn_opengl("Player IndexBuffer size:"), self.index_buffer.get_size()));
+        }
+
         //if  opengl::is_debugging_enabled(){println!("{}", logger::info_opengl("Setting Player Uniforms"))};
         // Set the sprite_size uniform
         let uniforms = uniform! {
@@ -150,6 +156,7 @@ impl Player{
             &uniforms,
             &Default::default(),
         ).expect(&logger::error_opengl("Failed to draw Player to Frame"));
+        if DEBUG_ONCE {unsafe { IS_DEBUGED = true };}
     }
 
     pub fn handle_input(&mut self, event: &mut glium::glutin::event::WindowEvent) {
@@ -189,4 +196,24 @@ pub fn set_view_matrix(display: Display)  -> na::Matrix4<f32>{
         0.0, 0.0, 0.0, 1.0,
     ); 
     view_matrix
+}
+
+pub fn is_debugging_enabled() -> bool {
+    if !DEBUG_ONCE {
+        if metadata::DEBUG || PLAYER_DEBUG || unsafe { OPENGL_DEBUG } {
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        if !unsafe { IS_DEBUGED }{
+            if metadata::DEBUG || PLAYER_DEBUG || unsafe { OPENGL_DEBUG } {
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
 }

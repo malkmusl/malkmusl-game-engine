@@ -1,4 +1,3 @@
-use crate::engine::assets_loader::loader::ASSET_PREFIX;
 
 //default message
 #[macro_export]

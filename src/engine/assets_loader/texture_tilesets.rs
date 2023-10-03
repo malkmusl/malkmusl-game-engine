@@ -131,7 +131,7 @@ lazy_static! {
         let atlas = TextureAtlas::new("textures/tilesets/", "underwater", [32, 32]);
         Arc::new(Mutex::new(atlas))
     };
-
+    
     // TextureAtlas for the Outside environment.
     pub static ref OUTSIDE_ATLAS: Arc<Mutex<TextureAtlas>> = {
         let atlas = TextureAtlas::new("textures/tilesets/", "outside", [32, 32]);

@@ -168,7 +168,7 @@ impl BackgroundTiles {
         }
         self.vertex_buffer.write(vertices.as_slice());
         
-        let texture = OUTSIDE_ATLAS.lock().expect("Failed to Wrepp texture").load_texture_from_map(1, self.display.clone());
+        let texture = OUTSIDE_ATLAS.lock().expect("Failed to Wrepp texture").load_texture_from_map(31, self.display.clone());
 
         let camera_matrix = player.update_camera();
 

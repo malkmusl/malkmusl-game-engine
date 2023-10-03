@@ -62,8 +62,8 @@ impl ToString for AppState {
 pub(crate) struct App {
     game_name: String,
     game_version: String,
-    game_width: f64,
-    game_height: f64,
+    game_width: u32,
+    game_height: u32,
     state: AppState,
     systems: Vec<(AppState, fn())>,
     debug: bool,
@@ -85,7 +85,7 @@ impl App {
     ///
     /// A new `App` instance initialized with the provided values and default state.
 
-    pub fn new(game_name: &str, game_version: &str, game_width: f64, game_height: f64, debug: bool) -> Self {
+    pub fn new(game_name: &str, game_version: &str, game_width: u32, game_height: u32, debug: bool) -> Self {
         let args: Vec<String> = env::args().collect();
         let app = App {
             state: AppState::PreInit,

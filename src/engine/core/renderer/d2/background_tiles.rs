@@ -1,6 +1,8 @@
 use glium::{Frame, implement_vertex, uniform, Display, Surface, VertexBuffer, IndexBuffer};
 use glium::texture::SrgbTexture2d;
 
+use crate::engine::assets_loader::texture_loader;
+use crate::engine::assets_loader::texture_tilesets::OUTSIDE_ATLAS;
 use crate::engine::console_logger::logger;
 use crate::engine::core::entity::player::Player;
 use crate::engine::core::metadata;
@@ -102,8 +104,6 @@ impl BackgroundTiles {
         frame: &mut Frame,
         rows: usize,
         columns: usize,
-        square_size: f32,
-        texture: &glium::texture::SrgbTexture2d,
         player: &mut Player,
     ) {
         let mut vertices: Vec<TileVertex> = Vec::new();
@@ -114,8 +114,8 @@ impl BackgroundTiles {
         let mut y = -1.0;
 
         // Calculate square size based on the screen dimensions
-        let screen_width = 2.0;
-        let screen_height = 2.0;
+        let screen_width = 32.0;
+        let screen_height = 32.0;
 
         let square_width = screen_width / columns as f32;
         let square_height = screen_height / rows as f32;
@@ -167,6 +167,8 @@ impl BackgroundTiles {
             println!("{}",format!("{} {}", logger::warn_opengl("Background IndexBuffer size:"), self.index_buffer.get_size()));
         }
         self.vertex_buffer.write(vertices.as_slice());
+        
+        let texture = OUTSIDE_ATLAS.lock().expect("Failed to Wrepp texture").load_texture_from_map(1, self.display.clone());
 
         let camera_matrix = player.update_camera();
 

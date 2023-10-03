@@ -62,7 +62,7 @@ macro_rules! logger_info_assetloader {
         let time = set_color(COLOR_DARK_GREY, get_time().as_str())+ " ";
         let msg = reset_color() +format_args!($($args)*).to_string().as_str();
 
-        let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+        let log_message = format!("{}{}{} {}", time, prefix, perfix_2, msg);
         println!("{}", log_message.as_str());
     };
 }
@@ -76,7 +76,7 @@ macro_rules! logger_warn_assetloader {
         let time = set_color(COLOR_DARK_GREY, get_time().as_str())+ " ";
         let msg = reset_color() +format_args!($($args)*).to_string().as_str();
 
-        let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+        let log_message = format!("{}{}{} {}", time, prefix, perfix_2, msg);
         println!("{}", log_message.as_str());
     };
 }
@@ -90,7 +90,7 @@ macro_rules! logger_error_assetloader {
         let time = set_color(COLOR_DARK_GREY, get_time().as_str())+ " ";
         let msg = reset_color() +format_args!($($args)*).to_string().as_str();
 
-        let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+        let log_message = format!("{}{}{} {}", time, prefix, perfix_2, msg);
         println!("{}", log_message.as_str());
     };
 }
@@ -105,7 +105,7 @@ macro_rules! logger_info_gamestate {
         let time = set_color(COLOR_DARK_GREY, get_time().as_str())+ " ";
         let msg = reset_color() +format_args!($($args)*).to_string().as_str();
 
-        let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+        let log_message = format!("{}{}{} {}", time, prefix, perfix_2, msg);
         println!("{}", log_message.as_str());
     };
 }
@@ -119,7 +119,7 @@ macro_rules! logger_warn_gamestate {
         let time = set_color(COLOR_DARK_GREY, get_time().as_str())+ " ";
         let msg = reset_color() +format_args!($($args)*).to_string().as_str();
 
-        let log_message = format!("{}{}{}{}", time, prefix, perfix_2, msg);
+        let log_message = format!("{}{}{} {}", time, prefix, perfix_2, msg);
         println!("{}", log_message.as_str());
     };
 }

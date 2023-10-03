@@ -1,5 +1,4 @@
 // basic implementation of vulkano
-
 use vulkano::VulkanLibrary;
 use vulkano::instance::{Instance, InstanceCreateInfo};
 use vulkano::device::QueueFlags;
@@ -9,7 +8,7 @@ use vulkano::buffer::{Buffer, BufferCreateInfo, BufferUsage};
 use vulkano::memory::allocator::{AllocationCreateInfo, MemoryUsage};
 
 #[allow(dead_code)]
-pub fn create_vulkano_window(_app_name: &str, _game_width: f64, _game_height: f64) {
+pub fn create_vulkano_window(_app_name: &str, _game_width: u32, _game_height: u32) {
     let library = VulkanLibrary::new().expect("no local Vulkan library/DLL");
     let instance = Instance::new(library, InstanceCreateInfo::default())
     .expect("failed to create instance");

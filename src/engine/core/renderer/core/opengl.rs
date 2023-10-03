@@ -1,18 +1,30 @@
 extern crate glium;
 extern crate lazy_static;
 
+use glium::glutin::{ContextBuilder, NotCurrent};
 use lazy_static::lazy_static;
 
+
 use glium::{Frame, Display};
+use tokio::sync::Mutex;
+use winit::dpi::LogicalSize;
+
+use winit::window::{WindowBuilder, Icon};
 use crate::engine::assets_loader;
-use crate::engine::assets_loader::texture_tilesets::OUTSIDE_ATLAS;
+use crate::engine::assets_loader::loader::ASSET_FOLDER;
+
 use crate::engine::assets_loader::texture_loader::TextureAtlas;
+use crate::engine::assets_loader::texture_tilesets::OUTSIDE_ATLAS;
 use crate::engine::console_logger::logger::{self, set_color};
 use crate::engine::core::entity::npc;
 use crate::engine::core::metadata::{ENGINE_NAME, ENGINE_VERSION, VSYNC, COLOR_CYAN, self};
 use crate::engine::core::entity::player;
 use crate::engine::core::renderer::d2::background_tiles;
 use crate::engine::core::renderer::camera::camera2d;
+use std::sync::Arc;
+
+use image::{ImageBuffer, Rgba};
+use std::collections::HashMap;
 
 use super::GameStatus;
 
@@ -23,61 +35,116 @@ lazy_static! {
     };
 }
 
-struct OpenGLDisplay{
-    display: Display
-}
+
 
 pub static mut OPENGL_DEBUG: bool = true;
+pub struct OpenGLWindow {
+    event_loop: glium::glutin::event_loop::EventLoop<()>,
+    _wb: Arc<WindowBuilder>,
+    _cb: Arc<ContextBuilder<'static, NotCurrent>>,
+    display: Arc<Display>,
+    _shared_state: Arc<Mutex<u32>>,// To enforce lifetime constraints
+}
 
-/// Creates an OpenGL window for the game with the specified name, width, and height.
-/// This function sets up the necessary event loop, window parameters, OpenGL context,
-/// and initializes game entities such as the player and NPCs. It also handles various
-/// events like window close requests and keyboard input for game control.
-///
-/// # Arguments
-///
-/// * `game_name` - The name of the game.
-/// * `game_width` - The width of the game window.
-/// * `game_height` - The height of the game window.
-///
-/// # Example
-///
-/// ```rust
-/// create_opengl_window("MyGame", 800.0, 600.0);
-/// ```
-///
-/// This function encapsulates the setup and main loop of the game's graphical interface.
-/// It is a crucial part of initializing and running the game.
+impl<'a> OpenGLWindow {
+    pub fn new(game_width: u32, game_height: u32, app_name: &str, vsync: bool) -> Self {
+        let graphics_api = "OpenGL";
+        let engine_version: &str = &*ENGINE_VERSION;
+        let app_name = format!("{} - [{} v{} - {}]", app_name, ENGINE_NAME, engine_version, graphics_api);
+
+        if is_debugging_enabled() {
+            println!("{}", logger::info_opengl("Creating EventLoop"));
+        }
+        let event_loop = glium::glutin::event_loop::EventLoop::new();
+
+        if is_debugging_enabled() {
+            println!("{}", logger::info_opengl("Creating WindowBuilder"));
+        }
+        let wb = WindowBuilder::new()
+            .with_inner_size(LogicalSize::new(game_width, game_height))
+            .with_title(app_name);
+        Self::set_icon(wb.clone());
+
+        if is_debugging_enabled() {
+            println!("{}", logger::info_opengl("Creating ContextBuffer"));
+        }
+
+        let cb = ContextBuilder::new().with_vsync(vsync);
+        if is_debugging_enabled() {
+            println!("{}", logger::info_opengl("Creating Display"));
+        }
+        let display = Display::new(wb.clone(), cb.clone(), &event_loop)
+            .unwrap_or_else(|e| panic!("{}", logger::error_opengl(&format!("Failed to create Display: {}", e))));
+
+        let shared_state = Arc::new(Mutex::new(0u32));
+
+        OpenGLWindow {
+            event_loop: event_loop,
+            _wb: Arc::new(wb),
+            _cb: Arc::new(cb),
+            display: Arc::new(display),
+            _shared_state: shared_state,
+        }
+    }
+
+    pub fn get_display(&self) -> Display {
+        let display = Arc::clone(&self.display);
+        (*display).clone()
+    }
+
+    pub fn get_event_loop(self) -> glium::glutin::event_loop::EventLoop<()> {
+        let event_loop = self.event_loop;
+        event_loop
+    }
+
+    #[allow(dead_code)]
+    pub fn get_shared_state(&self) -> &Arc<Mutex<u32>> {
+        &self._shared_state
+    }
+
+pub fn set_icon(wb: WindowBuilder) {
+    // Load the PNG file
+
+    let icon_path = format!("{}/apple.png", ASSET_FOLDER);
+    let icon_image = image::open(icon_path).expect("Failed to open icon image");
+
+    // Convert the image to RGBA format
+    let rgba_image = icon_image.to_rgba8();
+
+    // Get the image dimensions
+    let width = rgba_image.width();
+    let height = rgba_image.height();
+
+
+    // Create a winit::window::Icon from the texture
+    let icon = Icon::from_rgba(rgba_image.clone().to_vec(), width, height)
+        .expect("Failed to create icon from texture");
+
+    // Set the window icon and return the new WindowBuilder
+    let _ = wb.with_window_icon(Some(icon));
+}
+
+// Add other methods as needed
+}
+
 
 #[allow(unused_mut)]
-pub fn create_opengl_window(game_name: &str, game_width: f64, game_height: f64) {
-    let graphics_api = "OpenGL";
+pub fn create_opengl_window(game_name: &str, game_width: u32, game_height: u32) {
     let mut state = GameStatus::Running;
-    let engine_verison: &str = &*ENGINE_VERSION;
 
-    let app_name = game_name.to_owned() + " - [" + ENGINE_NAME + " v"+engine_verison+ " - "+ graphics_api+"]"; 
-    // 1. The **winit::EventsLoop** for handling events.
-    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating EventLoop"))};
-    let mut events_loop = glium::glutin::event_loop::EventLoop::new();
-    // 2. Parameters for building the Window.
-    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating WindowBuilder"))};
-    let wb = glium::glutin::window::WindowBuilder::new()
-        .with_inner_size(glium::glutin::dpi::LogicalSize::new(game_width, game_height))
-        .with_title(app_name);
-    // 3. Parameters for building the OpenGL context.
-    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating ContextBuffer"))};
-    let cb = glium::glutin::ContextBuilder::new().with_vsync(VSYNC);
-    // 4. Build the Display with the given window and OpenGL context parameters and register the
-    //    window with the events_loop.
-    if is_debugging_enabled(){println!("{}", logger::info_opengl("Creating Display"))};
-    let display = glium::Display::new(wb, cb, &events_loop).expect(&logger::error_opengl("Failed to create Display"));
+    let gl_window = OpenGLWindow::new(game_width, game_height, game_name, true);
+    let display = gl_window.get_display();
+    let event_loop = gl_window.get_event_loop();
+
+    load_atlases(display.clone());
+    //output_textures(&OUTSIDE_ATLAS.lock().unwrap().textures);
 
     let mut player = player::Player::new(display.clone(), "makmusl".to_string());
     let mut npc = npc::NPC::new(display.clone());
-    
+
     // 5. start EventsLoop
     println!("{}", logger::warn_opengl("Starting EventLoop"));
-    events_loop.run(move |event, _, control_flow| {
+    event_loop.run(move |event, _, control_flow| {
         // 6. Handle events here
         match event {
             glium::glutin::event::Event::WindowEvent { mut event, .. } => {
@@ -250,7 +317,7 @@ pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, playe
     //let atlas_texture = OUTSIDE_ATLAS.load_texture_from_atlas([1, 1], display.clone());
 
     let mut background = background_tiles::BackgroundTiles::new(display);
-    background.draw(frame, 10, 10, 0.1, &texture, player);
+    background.draw(frame, 10, 10, player);
     
 
     // Call the draw_square_grid_with_texture function with the loaded texture
@@ -268,32 +335,39 @@ pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, playe
     
 }
 
-
+#[allow(dead_code)]
 pub struct Level{
     pub data: Vec<background_tiles::BackgroundTiles>
 }
 
-pub fn load_background() {
-    let tileset_name = "outside"; // replace with the actual logic to determine the tileset name
 
-    if let Some(atlas) = get_atlas_by_name(tileset_name) {
-        // Atlas with the specified name exists, load a texture
-        // Do something with atlas_texture...
-    } else {
-        // Atlas with the specified name does not exist
-        println!("Atlas with name {} not found", tileset_name);
+fn load_atlases(display: glium::Display){
+    let outside_atlas = OUTSIDE_ATLAS.lock().expect("Failed to lock OUTSIDE_ATLAS").load_texture_from_tileset_to_map(&display);
+}
+
+
+fn output_textures(textures: &HashMap<u32, ImageBuffer<Rgba<u8>, Vec<u8>>>) {
+    for (key, image_buffer) in textures {
+        // Process or print the key and image_buffer as needed
+        println!("Key: {}", key);
+
+        // For demonstration, let's print the dimensions of the image buffer
+        let (width, height) = image_buffer.dimensions();
+        println!("Image Dimensions: {} x {}", width, height);
+
+        // You can perform other operations on the image_buffer as needed
+        // ...
+
+        // Example: Access a pixel value
+
+        // Example: Iterate over all pixels
+        for (_, _, pixel) in image_buffer.enumerate_pixels() {
+            // Process each pixel as needed
+            // ...
+        }
     }
 }
-fn get_atlas_by_name(name: &str) -> Option<&TextureAtlas> {
-    // Implement your logic to get the atlas by name
-    // Return Some(atlas) if found, None otherwise
-    // For example:
-    match name {
-        "outside" => Some(&OUTSIDE_ATLAS),
-        // Add more cases for other atlas names if needed
-        _ => None,
-    }
-}
+
 
 
 pub fn is_debugging_enabled() -> bool {

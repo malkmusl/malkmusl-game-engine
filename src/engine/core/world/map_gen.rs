@@ -3,6 +3,7 @@ use std::io::Write;
 use std::io::Read;
 use std::sync::Mutex;
 use std::sync::Arc;
+use glium::Display;
 use ron::de::from_str;
 use serde::Deserialize;
 
@@ -104,11 +105,11 @@ fn get_texture_atlas(name: &str) -> Option<&'static Arc<Mutex<TextureAtlas>>> {
     }
 }
 
-fn convert_texture(){
+fn convert_texture(display: Display){
     let temp_name = "OUTSIDE_ATLAS";
-    let atlas = get_texture_atlas(temp_name);
+    let atlas: &Arc<Mutex<TextureAtlas>> = get_texture_atlas(temp_name).expect("");
 
     let texture_id = 2; //temp_id
-    
-    let texture = atlas.load_texture_from_map(31, self.display.clone());
+
+    let atlas_lock = atlas.lock().expect("").load_texture_from_map(texture_id, display.clone());
 }

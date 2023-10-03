@@ -109,16 +109,28 @@ impl BackgroundTiles {
         let mut vertices: Vec<TileVertex> = Vec::new();
         let mut indices: Vec<u16> = Vec::new();
 
+                // Set initial position to (-1, -1)
+        let mut x = -1.0;
+        let mut y = -1.0;
+
+        // Calculate square size based on the screen dimensions
+        let screen_width = 2.0;
+        let screen_height = 2.0;
+
+        let square_width = screen_width / columns as f32;
+        let square_height = screen_height / rows as f32;
+
         for i in 0..rows {
             for j in 0..columns {
-                let x = j as f32 * square_size;
-                let y = i as f32 * square_size;
+                // Update x and y for each tile
+                x = -1.0 + j as f32 * square_width;
+                y = -1.0 + i as f32 * square_height;
 
                 let square_vertices = vec![
                     TileVertex { position: [x, y] },
-                    TileVertex { position: [x + square_size, y] },
-                    TileVertex { position: [x + square_size, y + square_size] },
-                    TileVertex { position: [x, y + square_size] },
+                    TileVertex { position: [x + square_width, y] },
+                    TileVertex { position: [x + square_width, y + square_height] },
+                    TileVertex { position: [x, y + square_height] },
                 ];
 
                 vertices.extend(square_vertices.iter());

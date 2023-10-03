@@ -11,7 +11,7 @@ lazy_static! {
     // TextureAtlas for the Boat tileset.
     pub static ref BOAT_ATLAS: TextureAtlas = TextureAtlas::new("textures/tilesets/", "boat", [32, 32]);
 
-    // TextureAtlas for the Caves environment.
+    // TextureAtlas for the Caves environment.s
     pub static ref CAVES_ATLAS: TextureAtlas = TextureAtlas::new("textures/tilesets/", "caves", [32, 32]);
 
     // TextureAtlas for the interior of the Department Store.

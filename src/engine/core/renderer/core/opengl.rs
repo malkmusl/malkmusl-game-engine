@@ -5,7 +5,7 @@ use lazy_static::lazy_static;
 
 use glium::{Frame, Display};
 use crate::engine::assets_loader;
-use crate::engine::assets_loader::texture_atlas::OUTSIDE_ATLAS;
+use crate::engine::assets_loader::texture_tilesets::OUTSIDE_ATLAS;
 use crate::engine::assets_loader::texture_loader::TextureAtlas;
 use crate::engine::console_logger::logger::{self, set_color};
 use crate::engine::core::entity::npc;
@@ -247,10 +247,10 @@ pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, playe
 
     let texture = assets_loader::loader::load_texture(&display, "moss_block.png");
 
-    let atlas_texture = OUTSIDE_ATLAS.load_texture_from_atlas([2, 1], display.clone());
+    //let atlas_texture = OUTSIDE_ATLAS.load_texture_from_atlas([1, 1], display.clone());
 
     let mut background = background_tiles::BackgroundTiles::new(display);
-    background.draw(frame, 10, 10, 0.1, &atlas_texture, player);
+    background.draw(frame, 10, 10, 0.1, &texture, player);
     
 
     // Call the draw_square_grid_with_texture function with the loaded texture
@@ -266,6 +266,33 @@ pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, playe
     */
     
     
+}
+
+
+pub struct Level{
+    pub data: Vec<background_tiles::BackgroundTiles>
+}
+
+pub fn load_background() {
+    let tileset_name = "outside"; // replace with the actual logic to determine the tileset name
+
+    if let Some(atlas) = get_atlas_by_name(tileset_name) {
+        // Atlas with the specified name exists, load a texture
+        // Do something with atlas_texture...
+    } else {
+        // Atlas with the specified name does not exist
+        println!("Atlas with name {} not found", tileset_name);
+    }
+}
+fn get_atlas_by_name(name: &str) -> Option<&TextureAtlas> {
+    // Implement your logic to get the atlas by name
+    // Return Some(atlas) if found, None otherwise
+    // For example:
+    match name {
+        "outside" => Some(&OUTSIDE_ATLAS),
+        // Add more cases for other atlas names if needed
+        _ => None,
+    }
 }
 
 

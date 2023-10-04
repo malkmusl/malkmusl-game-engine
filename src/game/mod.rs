@@ -2,15 +2,16 @@ use crate::engine::assets_loader::loader::ASSET_FOLDER;
 use crate::engine::core::{app::App, metadata::DEBUG};
 use crate::engine::core::world::map_gen::{self, read_base_map_file};
 
-
+mod pokemon;
+mod pokedex;
 
 pub fn main() {
     //dir_exist();
     //list_files();
-    map_test();
-
-    //let app = App::new("Test Game", "0.0.1-alpha", 800, 600, DEBUG);
-    //app.run();
+    //map_test();
+    //  1,280 × 720
+    let app = App::new("Test Game", "0.0.1-alpha", 1280, 720, DEBUG);
+    app.run();
 
 }
 

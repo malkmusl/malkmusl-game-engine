@@ -1,19 +1,21 @@
-(
-    ident: {
-        dex_id: {
+Pokemon(
+    ident: Ident(
+        dex_id: DexId {
             generation: 1,
             national: 1,
         },
-        type: {
+        type: Type {
             main: "grass",
             secondary: "poison",
         },
-        evolution: {
-            { method: "level_up", to: "ivysaur", condition: "level >= 16" },
+        evolution: Evolution {
+            method: "level_up",
+            to: "ivysaur",
+            condition: "level >= 16",
         },
-    },
-    lang: {
-        name: {
+    ),
+    lang: Lang {
+        name: Name {
             eng: "Bulbasaur",
             jpn: "フシギダネ (Fushigidane)",
             ger: "Bisasam",
@@ -21,21 +23,21 @@
             it: "Bulbasaur",
             esp: "Bulbasaur",
             kor: "이상해씨 (isanghaessi)",
-            zh_Hans: "妙蛙种子", // Chinese (Simplified)
-            zh_Hant: "妙蛙種子"  // Chinese (Traditional)
+            zh_Hans: "妙蛙种子",
+            zh_Hant: "妙蛙種子",
         },
-        description: {
+        description: Description {
             eng: "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
             jpn: "生まれたときから 背中に 不思議な タネが 植えられている。 この ポケモンと ともに 育つ。",
             ger: "Schon bei seiner Geburt wurde ein seltsamer Samen auf seinen Rücken gepflanzt. Die Pflanze keimt und wächst mit diesem Pokémon.",
             fr: "Une graine étrange a été plantée sur son dos à sa naissance. La plante germe et grandit avec ce Pokémon.",
             it: "Un seme strano è stato piantato sulla sua schiena alla nascita. La pianta germoglia e cresce con questo Pokémon.",
             esp: "Desde su nacimiento, lleva en la espalda una planta extraña. La planta crece y se desarrolla con este Pokémon.",
-            kor: "태어났을 때부터 등에 이상한 씨앗이 심어져 있다. 이 포켓몬과 함께 자란다.",
+            kor: "태어났을 때부터 등에 이상한 씨앗이 심어져 있다. 이 포켓몬과 함께 자란다。",
             zh_Hans: "从出生时起，背上就有一颗奇怪的种子。这个种子随着这只宝可梦一起生长。",
-            zh_Hant: "從出生時起，背上就有一顆奇怪的種子。這個種子隨著這隻寶可夢一起生長。"
+            zh_Hant: "從出生時起，背上就有一顆奇怪的種子。這個種子隨著這隻寶可夢一起生長。",
         },
-        species: {
+        species: Species {
             eng: "Seed Pokémon",
             jpn: "たねポケモン",
             ger: "Samen-Pokémon",
@@ -44,11 +46,11 @@
             esp: "Pokémon Semilla",
             kor: "씨앗 포켓몬",
             zh_Hans: "种子宝可梦",
-            zh_Hant: "種子寶可夢"
+            zh_Hant: "種子寶可夢",
         },
     },
-    stats: {
-        base: {
+    stats: Stats {
+        base: BaseStats {
             hp: 45,
             attack: 49,
             defense: 49,
@@ -56,7 +58,7 @@
             sp_defense: 65,
             speed: 45,
         },
-        ev: {
+        ev: EVStats {
             hp: 0,
             attack: 0,
             defense: 0,
@@ -64,26 +66,28 @@
             sp_defense: 0,
             speed: 0,
         },
-        misc: {
-            egg_groups: {
-                group_1: "grass"
-                group_2: "monster"
+        misc: MiscStats {
+            egg_groups: EggGroups {
+                group_1: "grass",
+                group_2: "monster",
             },
-            gender: {
-                male: 87.5
-                female: 12.5
-                no_gender: 0.0
+            gender: Gender {
+                male: 87.5,
+                female: 12.5,
+                no_gender: 0.0,
             },
             catch_rate: 45,
             base_friendship: 50,
             base_exp: 64,
-            growth_rate: MEDIUM_SLOW
-        }
+            growth_rate: "MEDIUM_SLOW", // Assuming "MEDIUM_SLOW" is a valid string
+        },
     },
-    evolution: {
-        { method: "level_up", to: "ivysaur", condition: "level >= 16" },
-    }
-    attacks: {
+    evolution: Evolution {
+        method: "level_up",
+        to: "ivysaur",
+        condition: "level >= 16",
+    },
+    attacks: Attacks {
         level_up_attacks: [
             { attack: "growl", level: 1 },
             { attack: "tackle", level: 1 },
@@ -143,18 +147,16 @@
             { attack: "skull_bash" },
             { attack: "sludge" },
         ],
-        tutor: [
-
-        ]
+        tutor: [],
     },
-    sprites: {
-        normal: {
+    sprites: Sprites {
+        normal: SpriteSet {
             front: "snake_texture.png",
-            back: "snake_texture.png"
+            back: "snake_texture.png",
         },
-        shiny: {
+        shiny: SpriteSet {
             front: "snake_texture.png",
-            back: "snake_texture.png"
-        }
-    }
+            back: "snake_texture.png",
+        },
+    },
 )

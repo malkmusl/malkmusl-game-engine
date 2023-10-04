@@ -1,6 +1,7 @@
 extern crate glium;
 extern crate lazy_static;
 
+use winit::window::Fullscreen;
 use glium::glutin::{ContextBuilder, NotCurrent};
 use lazy_static::lazy_static;
 
@@ -131,10 +132,14 @@ pub fn set_icon(wb: WindowBuilder) {
 #[allow(unused_mut)]
 pub fn create_opengl_window(game_name: &str, game_width: u32, game_height: u32) {
     let mut state = GameStatus::Running;
+    let mut is_fullscreen = false;
 
     let gl_window = OpenGLWindow::new(game_width, game_height, game_name, true);
     let display = gl_window.get_display();
+    let d = display.clone();
+    let window = d.gl_window();
     let event_loop = gl_window.get_event_loop();
+
 
     load_atlases(display.clone());
     //output_textures(&OUTSIDE_ATLAS.lock().unwrap().textures);
@@ -175,6 +180,19 @@ pub fn create_opengl_window(game_name: &str, game_width: u32, game_height: u32) 
                                         state = GameStatus::Running;
                                         logger::game_state(state, 22);
                                     }
+                                }
+                            },
+                            Some(glium::glutin::event::VirtualKeyCode::F11) => {
+                                if input.state == glium::glutin::event::ElementState::Pressed {
+                                    is_fullscreen = !is_fullscreen;
+                                    let new_state = if is_fullscreen {
+                                        Some(Fullscreen::Borderless(
+                                            display.gl_window().window().primary_monitor(),
+                                        ))
+                                    } else {
+                                        None
+                                    };
+                                    display.gl_window().window().set_fullscreen(new_state);
                                 }
                             }
                             _ => (),

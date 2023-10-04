@@ -84,7 +84,7 @@ impl TextureAtlas {
                     let y = col * texture_width;
                     let x = row * texture_height;
 
-                    logger_warn_assetloader!("Loading texture [{}] at position ({}, {}) in atlas", id, x, y);
+                    logger_warn_assetloader!("Loading texture [{}] at position ({}, {}) in atlas", id, row, col);
 
                     let cropped_image = self.atlas_image.view(x, y, texture_width, texture_height);
         

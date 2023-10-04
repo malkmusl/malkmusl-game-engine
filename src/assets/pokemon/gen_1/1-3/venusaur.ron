@@ -1,0 +1,180 @@
+(
+    ident: {
+        dex_id: {
+            generation: 1,
+            national: 3,
+        },
+        type: {
+            main: "grass",
+            secondary: "poison",
+        },
+        evolution: {
+            { method: "level_up", to: "venusaur", condition: "level >= 32" },
+        },
+    },
+    lang: {
+        name: {
+            eng: "Venusaur",
+            jpn: "フシギバナ (Fushigibana)",
+            ger: "Bisaflor",
+            fr: "Florizarre",
+            it: "Venusaur",
+            esp: "Venusaur",
+            kor: "이상해꽃 (isanghaekkot)",
+            zh_Hans: "妙蛙花", // Chinese (Simplified)
+            zh_Hant: "妙蛙花"  // Chinese (Traditional)
+        },
+        description: {
+            eng: "The plant blooms when it is absorbing solar energy. It stays on the move to seek sunlight.",
+            jpn: "太陽の 光を あびて 花が 咲く。 日光を あびるため うごきまわる。",
+            ger: "Die Pflanze blüht auf, wenn sie Sonnenenergie aufnimmt. Sie bewegt sich, um nach Sonnenlicht zu suchen.",
+            fr: "La plante fleurit en absorbant l'énergie solaire. Elle reste en mouvement pour rechercher la lumière du soleil.",
+            it: "La pianta fiorisce quando assorbe l'energia solare. Rimane in movimento per cercare la luce del sole.",
+            esp: "La planta florece cuando absorbe energía solar. Se mantiene en movimiento para buscar la luz del sol.",
+            kor: "태양의 빛을 흡수하면 꽃이 핀다. 햇볕을 받으려고 움직이면서 머무른다.",
+            zh_Hans: "吸收太阳能量后，花朵开放。它会不断移动以寻找阳光。",
+            zh_Hant: "吸收太陽能量後，花朵開放。它會不斷移動以尋找陽光。"
+        },
+        species: {
+            eng: "Seed Pokémon",
+            jpn: "たねポケモン",
+            ger: "Samen-Pokémon",
+            fr: "Pokémon Graine",
+            it: "Pokémon Seme",
+            esp: "Pokémon Semilla",
+            kor: "씨앗 포켓몬",
+            zh_Hans: "种子宝可梦",
+            zh_Hant: "種子寶可夢"
+        },
+    },
+    stats: {
+        base: {
+            hp: 80,
+            attack: 82,
+            defense: 83,
+            sp_attack: 100,
+            sp_defense: 100,
+            speed: 80,
+        },
+        ev: {
+            hp: 0,
+            attack: 0,
+            defense: 0,
+            sp_attack: 2,
+            sp_defense: 2,
+            speed: 0,
+        },
+        misc: {
+            egg_groups: {
+                group_1: "grass",
+                group_2: "monster"
+            },
+            gender: {
+                male: 87.5,
+                female: 12.5,
+                no_gender: 0.0
+            },
+            egg_cycles: 20,	
+            catch_rate: 45,
+            base_friendship: 70,
+            base_exp: 236,
+            growth_rate: MEDIUM_SLOW
+        }
+    },
+    attacks: {
+        level_up_attacks: [
+            { attack: "tackle", level: 1 },
+            { attack: "growl", level: 1 },
+            { attack: "leech_seed", level: 3 },
+            { attack: "vine_whip", level: 6 },
+            { attack: "poison_powder", level: 9 },
+            { attack: "sleep_powder", level: 15 },
+            { attack: "take_down", level: 18 },
+            { attack: "razor_leaf", level: 22 },
+            { attack: "sweet_scent", level: 25 },
+            { attack: "growth", level: 30 },
+            { attack: "double_edge", level: 34 },
+            { attack: "worry_seed", level: 39 },
+            { attack: "synthesis", level: 45 },
+            { attack: "seed_bomb", level: 51 },
+            { attack: "skull_bash", level: 57 },
+            { attack: "earthquake", level: 63 },
+        ],
+        hm_tm_attacks: [
+            { attack: "toxic", hm_tm: "TM06" },
+            { attack: "bulk_up", hm_tm: "TM08" },
+            { attack: "venoshock", hm_tm: "TM09" },
+            { attack: "hidden_power", hm_tm: "TM10" },
+            { attack: "sunny_day", hm_tm: "TM11" },
+            { attack: "taunt", hm_tm: "TM12" },
+            { attack: "ice_beam", hm_tm: "TM13" },
+            { attack: "blizzard", hm_tm: "TM14" },
+            { attack: "hyper_beam", hm_tm: "TM15" },
+            { attack: "light_screen", hm_tm: "TM16" },
+            { attack: "protect", hm_tm: "TM17" },
+            { attack: "rain_dance", hm_tm: "TM18" },
+            { attack: "giga_drain", hm_tm: "TM19" },
+            { attack: "safeguard", hm_tm: "TM20" },
+            { attack: "frustration", hm_tm: "TM21" },
+            { attack: "solar_beam", hm_tm: "TM22" },
+            { attack: "return", hm_tm: "TM27" },
+            { attack: "double_team", hm_tm: "TM32" },
+            { attack: "sludge_bomb", hm_tm: "TM36" },
+            { attack: "fire_blast", hm_tm: "TM38" },
+            { attack: "facade", hm_tm: "TM42" },
+            { attack: "rest", hm_tm: "TM44" },
+            { attack: "attract", hm_tm: "TM45" },
+            { attack: "round", hm_tm: "TM48" },
+            { attack: "echoed_voice", hm_tm: "TM49" },
+            { attack: "energy_ball", hm_tm: "TM53" },
+            { attack: "false_swipe", hm_tm: "TM54" },
+            { attack: "fling", hm_tm: "TM59" },
+            { attack: "brutal_swing", hm_tm: "TM60" },
+            { attack: "quash", hm_tm: "TM60" },
+            { attack: "will-o-wisp", hm_tm: "TM61" },
+            { attack: "acrobatics", hm_tm: "TM62" },
+            { attack: "shadow_ball", hm_tm: "TM64" },
+            { attack: "explosion", hm_tm: "TM65" },
+            { attack: "shadow_claw", hm_tm: "TM65" },
+            { attack: "rock_tomb", hm_tm: "TM71" },
+            { attack: "flame_charge", hm_tm: "TM73" },
+            { attack: "thunder_wave", hm_tm: "TM77" },
+            { attack: "psych_up", hm_tm: "TM77" },
+            { attack: "bulldoze", hm_tm: "TM78" },
+            { attack: "work_up", hm_tm: "TM78" },
+            { attack: "poison_jab", hm_tm: "TM84" },
+            { attack: "sleep_talk", hm_tm: "TM85" },
+            { attack: "grass_knot", hm_tm: "TM86" },
+            { attack: "swagger", hm_tm: "TM87" },
+            { attack: "plucks", hm_tm: "TM88" },
+            { attack: "u-turn", hm_tm: "TM89" },
+            { attack: "substitute", hm_tm: "TM90" },
+            { attack: "rock_smash", hm_tm: "TM98" },
+            { attack: "power_whip", hm_tm: "TM99" },
+        ],
+        egg_attacks: [
+            { attack: "amnesia" },
+            { attack: "charm" },
+            { attack: "curse" },
+            { attack: "grassy_terrain" },
+            { attack: "ingrain" },
+            { attack: "leaf_storm" },
+            { attack: "magical_leaf" },
+            { attack: "nature_power" },
+            { attack: "petal_dance" },
+            { attack: "power_whip" },
+            { attack: "skull_bash" },
+            { attack: "sludge" },
+        ],
+    },
+    sprites: {
+        normal: {
+            front: "venusaur_normal_front.png",
+            back: "venusaur_normal_back.png"
+        },
+        shiny: {
+            front: "venusaur_shiny_front.png",
+            back: "venusaur_shiny_back.png"
+        }
+    }
+)

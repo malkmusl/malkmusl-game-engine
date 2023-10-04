@@ -1,13 +1,15 @@
 use glium::{Frame, implement_vertex, uniform, Display, Surface, VertexBuffer, IndexBuffer};
 use glium::texture::SrgbTexture2d;
 
+use crate::engine::assets_loader::texture_loader;
+use crate::engine::assets_loader::texture_tilesets::OUTSIDE_ATLAS;
 use crate::engine::console_logger::logger;
 use crate::engine::core::entity::player::Player;
 use crate::engine::core::metadata;
 use crate::engine::core::renderer::core::opengl::OPENGL_DEBUG;
 
 static DEBUG_ONCE: bool = true;
-static mut IS_DEBUGED: bool = false;
+static mut IS_DEBUGED: bool = false; //always false
 
 const VERTEX_SHADER_SRC: &str = r#"
     #version 140
@@ -102,23 +104,33 @@ impl BackgroundTiles {
         frame: &mut Frame,
         rows: usize,
         columns: usize,
-        square_size: f32,
-        texture: &glium::texture::SrgbTexture2d,
         player: &mut Player,
     ) {
         let mut vertices: Vec<TileVertex> = Vec::new();
         let mut indices: Vec<u16> = Vec::new();
 
+                // Set initial position to (-1, -1)
+        let mut x = -1.0;
+        let mut y = -1.0;
+
+        // Calculate square size based on the screen dimensions
+        let screen_width = 32.0;
+        let screen_height = 32.0;
+
+        let square_width = screen_width / columns as f32;
+        let square_height = screen_height / rows as f32;
+
         for i in 0..rows {
             for j in 0..columns {
-                let x = j as f32 * square_size;
-                let y = i as f32 * square_size;
+                // Update x and y for each tile
+                x = -1.0 + j as f32 * square_width;
+                y = -1.0 + i as f32 * square_height;
 
                 let square_vertices = vec![
                     TileVertex { position: [x, y] },
-                    TileVertex { position: [x + square_size, y] },
-                    TileVertex { position: [x + square_size, y + square_size] },
-                    TileVertex { position: [x, y + square_size] },
+                    TileVertex { position: [x + square_width, y] },
+                    TileVertex { position: [x + square_width, y + square_height] },
+                    TileVertex { position: [x, y + square_height] },
                 ];
 
                 vertices.extend(square_vertices.iter());
@@ -155,6 +167,8 @@ impl BackgroundTiles {
             println!("{}",format!("{} {}", logger::warn_opengl("Background IndexBuffer size:"), self.index_buffer.get_size()));
         }
         self.vertex_buffer.write(vertices.as_slice());
+        
+        let texture = OUTSIDE_ATLAS.lock().expect("Failed to Wrepp texture").load_texture_from_map(31, self.display.clone());
 
         let camera_matrix = player.update_camera();
 

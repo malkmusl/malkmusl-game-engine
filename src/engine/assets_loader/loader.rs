@@ -24,6 +24,7 @@ lazy_static! {
     };
 }
 
+#[allow(dead_code)]
 pub fn dir_exist(){
     if let Ok(metadata) = fs::metadata(ASSET_FOLDER) {
         if metadata.is_dir() {
@@ -37,7 +38,7 @@ pub fn dir_exist(){
     }   
 }
 
-
+#[allow(dead_code)]
 pub fn list_files() {
     if let Ok(entries) = fs::read_dir(ASSET_FOLDER) {
         for entry in entries {

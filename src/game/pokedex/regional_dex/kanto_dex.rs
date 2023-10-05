@@ -9,7 +9,16 @@ lazy_static!{
 }
 
 pub fn create_kanto_dex() {
-    KANTO_DEX.insert_pokemon(0001, BULBASAUR.get());
-    KANTO_DEX.insert_pokemon(0002, IVYSAUR.get());
-    KANTO_DEX.insert_pokemon(0003, VENUSAUR.get());
+
+//?  KANTO_DEX.insert_pokemon(3.1, MEGA_VENUSAUR.get());
+
+    KANTO_DEX.insert_pokemon(1.0, BULBASAUR.get());
+    KANTO_DEX.insert_pokemon(2.0, IVYSAUR.get());
+    KANTO_DEX.insert_pokemon(3.0, VENUSAUR.get());
+    KANTO_DEX.insert_pokemon(3.1, MEGA_VENUSAUR.get());
+    KANTO_DEX.insert_pokemon(4.0, CHARMANDER.get());
+    KANTO_DEX.insert_pokemon(5.0, CHARMELEON.get());
+    KANTO_DEX.insert_pokemon(6.0, CHARIZARD.get());
+    KANTO_DEX.insert_pokemon(6.1, MEGA_CHARIZARD_X.get());
+    KANTO_DEX.insert_pokemon(6.2, MEGA_CHARIZARD_Y.get());
 }

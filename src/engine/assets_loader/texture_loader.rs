@@ -3,7 +3,6 @@ use crate::{logger_warn_assetloader, logger_error_assetloader, logger_info_asset
 use crate::engine::assets_loader::loader::*;
 use crate::engine::assets_loader;
 use crate::engine::console_logger::logger;
-use crate::engine::core::renderer::d2::background_tiles::Tile;
 use glium::texture::RawImage2d;
 use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
 use glium::{texture::SrgbTexture2d, Display};

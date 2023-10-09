@@ -14,7 +14,6 @@ use winit::window::{WindowBuilder, Icon};
 use crate::engine::assets_loader;
 use crate::engine::assets_loader::loader::ASSET_FOLDER;
 
-use crate::engine::assets_loader::texture_loader::TextureAtlas;
 use crate::engine::assets_loader::texture_tilesets::OUTSIDE_ATLAS;
 use crate::engine::console_logger::logger::{self, set_color};
 use crate::engine::core::entity::npc;
@@ -140,6 +139,7 @@ pub fn create_opengl_window(game_name: &str, game_width: u32, game_height: u32) 
     let window = d.gl_window();
     let event_loop = gl_window.get_event_loop();
 
+    let mut background = background_tiles::BackgroundTiles::new(display.clone());
 
     load_atlases(display.clone());
     //output_textures(&OUTSIDE_ATLAS.lock().unwrap().textures);
@@ -204,7 +204,7 @@ pub fn create_opengl_window(game_name: &str, game_width: u32, game_height: u32) 
             _ => {
                 if state == GameStatus::Running {
                     *control_flow = glium::glutin::event_loop::ControlFlow::Poll;
-                    update_content(display.clone(), &mut player, &mut npc);
+                    update_content(display.clone(), &mut player, &mut npc, &mut background);
                 } else {
                     *control_flow = glium::glutin::event_loop::ControlFlow::Wait;
                 }
@@ -238,10 +238,10 @@ pub fn create_opengl_window(game_name: &str, game_width: u32, game_height: u32) 
 /// This function is a key part of the game loop, responsible for rendering and updating
 /// the visual elements of the game.
 
-pub fn update_content(display: glium::Display,player: &mut player::Player, _npc: &mut npc::NPC){
+pub fn update_content(display: glium::Display,player: &mut player::Player, _npc: &mut npc::NPC, background_tiles: &mut background_tiles::BackgroundTiles){
     let mut frame = display.draw();
     //draw_squareV2(display.clone(), &mut frame);
-    update_background_tiles(display.clone(), &mut frame, player);
+    update_background_tiles(display.clone(), &mut frame, player , background_tiles);
     update_player(player, &mut frame);
     //update_npc(npc, &mut frame);
     frame.finish().expect(&logger::error_opengl("Failed to finish Frame"));
@@ -325,7 +325,7 @@ pub fn update_npc(npc: &mut npc::NPC, mut frame: &mut Frame) {
 /// This function plays a crucial role in maintaining the visual aspect of the game's
 /// environment.
 
-pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, player: &mut player::Player){
+pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, player: &mut player::Player, background: &mut background_tiles::BackgroundTiles){
     //background_tiles::draw(display.clone(), frame, 10, 10, 0.5);
     //testing::simple_square::draw_square_grid(&display, frame, 1, 3, 0.2);
     let _ = assets_loader::loader::load_tiles_from_file("test");
@@ -334,7 +334,7 @@ pub fn update_background_tiles(display: glium::Display, frame: &mut Frame, playe
 
     //let atlas_texture = OUTSIDE_ATLAS.load_texture_from_atlas([1, 1], display.clone());
 
-    let mut background = background_tiles::BackgroundTiles::new(display);
+    
     background.draw(frame, 10, 10, player);
     
 
@@ -379,7 +379,7 @@ fn output_textures(textures: &HashMap<u32, ImageBuffer<Rgba<u8>, Vec<u8>>>) {
         // Example: Access a pixel value
 
         // Example: Iterate over all pixels
-        for (_, _, pixel) in image_buffer.enumerate_pixels() {
+        for (_, _, _pixel) in image_buffer.enumerate_pixels() {
             // Process each pixel as needed
             // ...
         }

@@ -7,10 +7,10 @@ use crate::engine::core::world::map_gen::{self, read_base_map_file};
 pub fn main() {
     //dir_exist();
     //list_files();
-    map_test();
+    //map_test();
 
-    //let app = App::new("Test Game", "0.0.1-alpha", 800, 600, DEBUG);
-    //app.run();
+    let app = App::new("Test Game", "0.0.1-alpha", 800, 600, DEBUG);
+    app.run();
 
 }
 
